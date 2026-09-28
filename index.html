@@ -1,0 +1,1557 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Finances Personnelles</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/react-is@18.3.1/umd/react-is.production.min.js"></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+</head>
+<body>
+<div id="root"><div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0a0c28;color:#8A8FC0;font-family:system-ui,sans-serif;font-size:14px;">Chargement…</div></div>
+<script>
+if (!window.React || !window.ReactDOM || !window.Recharts) {
+  document.getElementById("root").innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0a0c28;color:#EDEFFF;font-family:system-ui,sans-serif;font-size:14px;text-align:center;padding:24px;line-height:1.6;">Chargement impossible (connexion internet requise au premier chargement) \u2014 vos donn\xE9es restent en s\xE9curit\xE9 sur cet appareil.<br/>Rechargez avec une connexion active.</div>';
+} else {
+(() => {
+  const { useState, useEffect, useCallback } = React;
+  const {
+    ComposedChart,
+    Bar,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    PieChart,
+    Pie,
+    Cell,
+    AreaChart,
+    Area
+  } = Recharts;
+  function IconBase({ size = 20, color = "currentColor", children }) {
+    return /* @__PURE__ */ React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, children);
+  }
+  const Home = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("path", { d: "M3 11l9-8 9 8" }), /* @__PURE__ */ React.createElement("path", { d: "M5 10v10h14V10" }));
+  const TrendingUp = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("polyline", { points: "3,17 9,11 13,15 21,7" }), /* @__PURE__ */ React.createElement("polyline", { points: "14,7 21,7 21,14" }));
+  const TrendingDown = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("polyline", { points: "3,7 9,13 13,9 21,17" }), /* @__PURE__ */ React.createElement("polyline", { points: "14,17 21,17 21,10" }));
+  const BarChart3 = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("line", { x1: "4", y1: "20", x2: "4", y2: "10" }), /* @__PURE__ */ React.createElement("line", { x1: "12", y1: "20", x2: "12", y2: "4" }), /* @__PURE__ */ React.createElement("line", { x1: "20", y1: "20", x2: "20", y2: "14" }));
+  const Landmark = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("polygon", { points: "3,10 12,4 21,10" }), /* @__PURE__ */ React.createElement("line", { x1: "4", y1: "10", x2: "4", y2: "19" }), /* @__PURE__ */ React.createElement("line", { x1: "20", y1: "10", x2: "20", y2: "19" }), /* @__PURE__ */ React.createElement("line", { x1: "3", y1: "20", x2: "21", y2: "20" }));
+  const ShieldCheck = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("path", { d: "M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z" }), /* @__PURE__ */ React.createElement("polyline", { points: "9,12 11,14 15,10" }));
+  const Wallet = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("rect", { x: "2", y: "6", width: "20", height: "14", rx: "2" }), /* @__PURE__ */ React.createElement("path", { d: "M2 10h20" }), /* @__PURE__ */ React.createElement("circle", { cx: "17", cy: "14", r: "1.1", fill: p.color || "currentColor" }));
+  const Plus = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("line", { x1: "12", y1: "5", x2: "12", y2: "19" }), /* @__PURE__ */ React.createElement("line", { x1: "5", y1: "12", x2: "19", y2: "12" }));
+  const Trash2 = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("polyline", { points: "3,6 5,6 21,6" }), /* @__PURE__ */ React.createElement("path", { d: "M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" }));
+  const PiggyBank = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("path", { d: "M4 12a6 6 0 0110-4.5V6h2v2l2 1v3l-2 1v1a2 2 0 01-2 2h-1v2H9v-2H7l-1-2H4z" }), /* @__PURE__ */ React.createElement("circle", { cx: "8", cy: "12", r: "0.6", fill: p.color || "currentColor" }));
+  const Compass = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("circle", { cx: "12", cy: "12", r: "9" }), /* @__PURE__ */ React.createElement("polygon", { points: "15,9 13,13 9,15 11,11" }));
+  const ArrowUp = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("line", { x1: "12", y1: "19", x2: "12", y2: "5" }), /* @__PURE__ */ React.createElement("polyline", { points: "6,11 12,5 18,11" }));
+  const ArrowDown = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("line", { x1: "12", y1: "5", x2: "12", y2: "19" }), /* @__PURE__ */ React.createElement("polyline", { points: "6,13 12,19 18,13" }));
+  const ScrollText = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("path", { d: "M8 3H5a2 2 0 00-2 2v3a2 2 0 002 2h1" }), /* @__PURE__ */ React.createElement("path", { d: "M6 10v9a2 2 0 002 2h9a2 2 0 002-2v-2" }), /* @__PURE__ */ React.createElement("path", { d: "M13 3h6a2 2 0 012 2v10a2 2 0 01-2 2H10" }));
+  const Download = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("path", { d: "M12 3v12" }), /* @__PURE__ */ React.createElement("polyline", { points: "7,11 12,16 17,11" }), /* @__PURE__ */ React.createElement("line", { x1: "4", y1: "20", x2: "20", y2: "20" }));
+  const Upload = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("path", { d: "M12 21V9" }), /* @__PURE__ */ React.createElement("polyline", { points: "7,13 12,8 17,13" }), /* @__PURE__ */ React.createElement("line", { x1: "4", y1: "20", x2: "20", y2: "20" }));
+  const Copy = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("rect", { x: "9", y: "9", width: "12", height: "12", rx: "1.5" }), /* @__PURE__ */ React.createElement("path", { d: "M5 15V5a2 2 0 012-2h10" }));
+  const Target = (p) => /* @__PURE__ */ React.createElement(IconBase, { ...p }, /* @__PURE__ */ React.createElement("circle", { cx: "12", cy: "12", r: "9" }), /* @__PURE__ */ React.createElement("circle", { cx: "12", cy: "12", r: "5" }), /* @__PURE__ */ React.createElement("circle", { cx: "12", cy: "12", r: "1", fill: p.color || "currentColor" }));
+  const MONTHS_FR = ["JANVIER", "F\xC9VRIER", "MARS", "AVRIL", "MAI", "JUIN", "JUILLET", "AO\xDBT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "D\xC9CEMBRE"];
+  const MONTHS_FR_SHORT = ["Janv", "F\xE9vr", "Mars", "Avr", "Mai", "Juin", "Juil", "Ao\xFBt", "Sept", "Oct", "Nov", "D\xE9c"];
+  const INCOME_CATEGORIES = ["Salaire", "Freelance / Ind\xE9pendant", "Remboursements", "Aides / Allocations", "Cadeaux re\xE7us", "Autre"];
+  const DEFAULT_BUDGET_CATEGORIES = [
+    { id: "cat-logement", nom: "Logement / Cr\xE9dit", budgetMensuel: 0 },
+    { id: "cat-alimentation", nom: "Alimentation", budgetMensuel: 0 },
+    { id: "cat-transport", nom: "Transport", budgetMensuel: 0 },
+    { id: "cat-loisirs", nom: "Loisirs & Sorties", budgetMensuel: 0 },
+    { id: "cat-autre", nom: "Autre", budgetMensuel: 0 }
+  ];
+  const CATEGORY_KEYWORDS = {
+    "Alimentation": ["carrefour", "leclerc", "auchan", "lidl", "monoprix", "franprix", "intermarche", "intermarch\xE9", "casino", "supermarche", "supermarch\xE9", "biocoop", "grand frais", "picard"],
+    "Transport": ["sncf", "ratp", "uber", "essence", "total energies", "station", "navigo", "blablacar", "autoroute", "peage", "p\xE9age", "vinci"],
+    "Loisirs & Sorties": ["netflix", "spotify", "disney", "cinema", "cin\xE9ma", "concert", "bar", "restaurant", "mcdonald", "mcdo", "kfc", "sushi", "pizza", "deliveroo", "uber eats"],
+    "Logement / Cr\xE9dit": ["loyer", "credit immo", "cr\xE9dit immo", "edf", "engie", "free", "orange", "sfr", "bouygues"]
+  };
+  function guessCategory(libelle, availableNames) {
+    const l = (libelle || "").toLowerCase();
+    for (const cat in CATEGORY_KEYWORDS) {
+      if (!availableNames.includes(cat)) continue;
+      const kws = CATEGORY_KEYWORDS[cat];
+      if (kws.some((k) => l.includes(k))) return cat;
+    }
+    return null;
+  }
+  const NAV = [
+    { key: "dashboard", label: "Tableau de bord", icon: Home },
+    { key: "revenus", label: "Revenus", icon: TrendingUp },
+    { key: "depenses", label: "D\xE9penses", icon: TrendingDown },
+    { key: "budget", label: "Budget", icon: PiggyBank },
+    { key: "objectifs", label: "Objectifs", icon: Target },
+    { key: "pea", label: "PEA", icon: BarChart3 },
+    { key: "av", label: "Assurance Vie", icon: ShieldCheck },
+    { key: "ldds", label: "LDDS", icon: Landmark },
+    { key: "livreta", label: "Livret A", icon: Landmark },
+    { key: "bilan", label: "Bilan", icon: ScrollText },
+    { key: "previsions", label: "Pr\xE9visions", icon: Compass }
+  ];
+  const fmt = (n) => (Number(n) || 0).toLocaleString("fr-FR", { maximumFractionDigits: 0 }) + " \u20AC";
+  const fmtK = (n) => Math.abs(n) >= 1e3 ? Math.round(n / 1e3) + "k" : Math.round(n);
+  const COLORS = {
+    bg1: "#0a0c28",
+    bg2: "#171a4d",
+    cardBorder: "rgba(255,255,255,0.07)",
+    blue: "#5B6EF5",
+    blueLight: "#8FA0FF",
+    violet: "#8B5CF6",
+    pink: "#FF3E9A",
+    cyan: "#4FD7DE",
+    gold: "#E8C86B",
+    green: "#4ADE80",
+    yellow: "#FACC15",
+    orange: "#FB923C",
+    red: "#FF1A1A",
+    text: "#EDEFFF",
+    sub: "#8A8FC0"
+  };
+  const PIE_PALETTE = [COLORS.violet, COLORS.cyan, COLORS.gold, COLORS.blueLight, COLORS.pink, "#34D399", "#F472B6", "#60A5FA"];
+  function categoryColor(categoryNames, name) {
+    const idx = categoryNames.indexOf(name);
+    return idx >= 0 ? PIE_PALETTE[idx % PIE_PALETTE.length] : COLORS.sub;
+  }
+  const inputStyle = {
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: 8,
+    padding: "6px 8px",
+    color: COLORS.text,
+    fontSize: 12,
+    outline: "none"
+  };
+  function daysInMonth(year, monthIdx) {
+    return new Date(year, monthIdx + 1, 0).getDate();
+  }
+  function dayOf(dateStr) {
+    if (!dateStr || dateStr.length < 10) return 0;
+    return Number(dateStr.slice(8, 10));
+  }
+  function ymIndex(year, monthIdx) {
+    return year * 12 + monthIdx;
+  }
+  function parseYM(str) {
+    const [y, m] = String(str).split("-").map(Number);
+    return { year: y, monthIdx: (m || 1) - 1 };
+  }
+  function ymStr(year, monthIdx) {
+    return `${year}-${String(monthIdx + 1).padStart(2, "0")}`;
+  }
+  function nextMonthYM(year, monthIdx) {
+    return monthIdx === 11 ? ymStr(year + 1, 0) : ymStr(year, monthIdx + 1);
+  }
+  function versionedValueAt(history, year, monthIdx) {
+    if (!history || history.length === 0) return 0;
+    const target = ymIndex(year, monthIdx);
+    let result = 0;
+    const sorted = [...history].sort((a, b) => a.from.localeCompare(b.from));
+    for (const h of sorted) {
+      const p = parseYM(h.from);
+      if (ymIndex(p.year, p.monthIdx) <= target) result = Number(h.value) || 0;
+      else break;
+    }
+    return result;
+  }
+  function upsertVersioned(history, from, value) {
+    const filtered = (history || []).filter((h) => h.from !== from);
+    return [...filtered, { from, value }].sort((a, b) => a.from.localeCompare(b.from));
+  }
+  function yearlyValueAt(history, year) {
+    if (!history || history.length === 0) return 0;
+    let result = 0;
+    const sorted = [...history].sort((a, b) => a.year - b.year);
+    for (const h of sorted) {
+      if (h.year <= year) result = Number(h.value) || 0;
+      else break;
+    }
+    return result;
+  }
+  function upsertYearly(history, year, value) {
+    const filtered = (history || []).filter((h) => h.year !== year);
+    return [...filtered, { year, value }].sort((a, b) => a.year - b.year);
+  }
+  function buildMonthList(startYear, startMonthIdx, endYear, endMonthIdx) {
+    const list = [];
+    let y = startYear, m = startMonthIdx;
+    let guard = 0;
+    while ((y < endYear || y === endYear && m <= endMonthIdx) && guard < 2400) {
+      list.push({ year: y, monthIdx: m });
+      m++;
+      if (m > 11) {
+        m = 0;
+        y++;
+      }
+      guard++;
+    }
+    return list;
+  }
+  function todayInfo() {
+    const d = /* @__PURE__ */ new Date();
+    return { year: d.getFullYear(), monthIdx: d.getMonth(), day: d.getDate() };
+  }
+  function computeInstrumentSchedule({
+    dateDebut,
+    capitalInitial,
+    versementHistory,
+    allocationPct,
+    rendementHistory,
+    rendementIsYearly,
+    fraisAnnuelsPct,
+    fraisAnnuelsGlobalPct,
+    fraisVersementPct,
+    jourVersement,
+    endYear,
+    endMonthIdx,
+    today
+  }) {
+    const start = parseYM(dateDebut || ymStr(today.year, today.monthIdx));
+    const months = buildMonthList(start.year, start.monthIdx, endYear, endMonthIdx);
+    let capital = Number(capitalInitial) || 0;
+    let cumulInvesti = Number(capitalInitial) || 0;
+    const todayIdx = ymIndex(today.year, today.monthIdx);
+    const rows = [];
+    for (const { year, monthIdx } of months) {
+      const idx = ymIndex(year, monthIdx);
+      const isPast = idx < todayIdx;
+      const isTodayMonth = idx === todayIdx;
+      const landed = isPast || isTodayMonth && today.day >= (jourVersement || 1);
+      const versementTotal = versionedValueAt(versementHistory, year, monthIdx);
+      const versementBrut = landed ? versementTotal * ((Number(allocationPct) || 0) / 100) : 0;
+      const versementNet = versementBrut * (1 - (Number(fraisVersementPct) || 0) / 100);
+      const rendementAnnuel = rendementIsYearly ? yearlyValueAt(rendementHistory, year) : versionedValueAt(rendementHistory, year, monthIdx);
+      const tauxMensuel = (rendementAnnuel - (Number(fraisAnnuelsPct) || 0) - (Number(fraisAnnuelsGlobalPct) || 0)) / 12 / 100;
+      capital = capital * (1 + tauxMensuel) + versementNet;
+      cumulInvesti += versementNet;
+      rows.push({ year, monthIdx, capital, cumulInvesti, landed, isFuture: idx > todayIdx });
+    }
+    return rows;
+  }
+  function prevMonth(year, monthIdx) {
+    return monthIdx === 0 ? { year: year - 1, monthIdx: 11 } : { year, monthIdx: monthIdx - 1 };
+  }
+  function landedVersementForMonth(history, jourVersement, year, monthIdx, today) {
+    const idx = ymIndex(year, monthIdx);
+    const todayIdx = ymIndex(today.year, today.monthIdx);
+    const isPast = idx < todayIdx;
+    const isTodayMonth = idx === todayIdx;
+    const landed = isPast || isTodayMonth && today.day >= (jourVersement || 1);
+    return landed ? versionedValueAt(history, year, monthIdx) : 0;
+  }
+  function valueAtSelectedMonth(rows, year, monthIdx) {
+    const idx = ymIndex(year, monthIdx);
+    const row = rows.find((r) => ymIndex(r.year, r.monthIdx) === idx);
+    if (row) return row;
+    return { capital: 0, cumulInvesti: 0, landed: false, isFuture: false };
+  }
+  function futureValueSeries(presentValue, monthlyContribution, monthlyRate, horizons) {
+    return horizons.map((N) => {
+      if (Math.abs(monthlyRate) < 1e-9) return presentValue + monthlyContribution * N;
+      const growth = Math.pow(1 + monthlyRate, N);
+      return presentValue * growth + monthlyContribution * ((growth - 1) / monthlyRate);
+    });
+  }
+  function averageThisYear(history, isYearly, today) {
+    if (isYearly) return yearlyValueAt(history, today.year);
+    const months = buildMonthList(today.year, 0, today.year, today.monthIdx);
+    const vals = months.map((m) => versionedValueAt(history, m.year, m.monthIdx));
+    if (vals.length === 0) return 0;
+    return vals.reduce((s, v) => s + v, 0) / vals.length;
+  }
+  function computeLivretSchedule(dataByYear, years, soldeInitial, tauxAnnuelPct) {
+    let solde = Number(soldeInitial) || 0;
+    const rows = [];
+    const sortedYears = [...years].sort((a, b) => a - b);
+    const tauxMensuel = (Number(tauxAnnuelPct) || 0) / 12 / 100;
+    for (const y of sortedYears) {
+      const yearData = dataByYear[y] || emptyAccountYear();
+      for (let m = 0; m < 12; m++) {
+        const versement = Number((yearData[MONTHS_FR[m]] || {}).versement) || 0;
+        solde = solde * (1 + tauxMensuel) + versement;
+        rows.push({ year: y, monthIdx: m, versement, valeur: solde });
+      }
+    }
+    return rows;
+  }
+  function livretRowAt(schedule, year, monthIdx) {
+    return schedule.find((r) => r.year === year && r.monthIdx === monthIdx) || { versement: 0, valeur: 0 };
+  }
+  function emptyMonth() {
+    return { incomeTx: [], expenseTx: [], solde: 0 };
+  }
+  function emptyFinanceYear() {
+    const o = {};
+    MONTHS_FR.forEach((m) => o[m] = emptyMonth());
+    return o;
+  }
+  function emptyAccountYear() {
+    const o = {};
+    MONTHS_FR.forEach((m) => o[m] = { versement: 0, valeur: 0 });
+    return o;
+  }
+  function emptyLddsSettings() {
+    return { tauxAnnuelPct: 0, versementMensuel: 0, soldeInitial: 0 };
+  }
+  function emptyPeaSettings() {
+    return { versementHistory: [], jourVersement: 5, fraisVersementPct: 0, fraisAnnuelsGlobalPct: 0, soldeEspeces: 0 };
+  }
+  function emptyAvSettings() {
+    return { versementSupportsHistory: [], versementFondsEuroHistory: [], jourVersement: 5, fraisVersementSupportsPct: 0, fraisVersementFondsEuroPct: 0, fraisAnnuelsGlobalPct: 0 };
+  }
+  function emptyFondsEuro() {
+    return { dateDebut: "", capitalInitial: 0, rendementHistory: [], fraisAnnuelsPct: 0 };
+  }
+  function newHolding() {
+    return { id: Date.now() + Math.random(), nom: "", sousJacent: "", dateDebut: "", capitalInitial: 0, allocationPct: 0, rendementPct: 0, fraisAnnuelsPct: 0, nombreParts: 0, valeurPart: 0 };
+  }
+  function newObjectif() {
+    return { id: Date.now() + Math.random(), nom: "", cible: 0, montant: 0 };
+  }
+  function Card({ children, className = "", style = {} }) {
+    return /* @__PURE__ */ React.createElement("div", { className: `rounded-2xl ${className}`, style: { background: "linear-gradient(160deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015))", border: `1px solid ${COLORS.cardBorder}`, boxShadow: "0 8px 30px rgba(0,0,0,0.35)", ...style } }, children);
+  }
+  function EditableNumber({ value, onCommit, suffix = " \u20AC", decimals = 0 }) {
+    const [editing, setEditing] = useState(false);
+    const [temp, setTemp] = useState(value);
+    useEffect(() => {
+      if (!editing) setTemp(value);
+    }, [value, editing]);
+    if (editing) {
+      return /* @__PURE__ */ React.createElement(
+        "input",
+        {
+          autoFocus: true,
+          type: "number",
+          step: "0.01",
+          value: temp,
+          onChange: (e) => setTemp(e.target.value),
+          onBlur: () => {
+            setEditing(false);
+            onCommit(Number(temp) || 0);
+          },
+          onKeyDown: (e) => {
+            if (e.key === "Enter") e.target.blur();
+          },
+          style: { ...inputStyle, width: 90, textAlign: "right" }
+        }
+      );
+    }
+    return /* @__PURE__ */ React.createElement("span", { onClick: () => setEditing(true), className: "cursor-pointer", style: { borderBottom: "1px dashed rgba(255,255,255,0.3)", paddingBottom: 1 }, title: "Cliquer pour modifier" }, (Number(value) || 0).toLocaleString("fr-FR", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }), suffix);
+  }
+  function EditableText({ value, onCommit, placeholder = "" }) {
+    const [editing, setEditing] = useState(false);
+    const [temp, setTemp] = useState(value);
+    useEffect(() => {
+      if (!editing) setTemp(value);
+    }, [value, editing]);
+    if (editing) {
+      return /* @__PURE__ */ React.createElement(
+        "input",
+        {
+          autoFocus: true,
+          type: "text",
+          value: temp,
+          placeholder,
+          onChange: (e) => setTemp(e.target.value),
+          onBlur: () => {
+            setEditing(false);
+            onCommit(temp);
+          },
+          onKeyDown: (e) => {
+            if (e.key === "Enter") e.target.blur();
+          },
+          style: { ...inputStyle, width: 130 }
+        }
+      );
+    }
+    return /* @__PURE__ */ React.createElement("span", { onClick: () => setEditing(true), className: "cursor-pointer", style: { borderBottom: "1px dashed rgba(255,255,255,0.3)" }, title: "Cliquer pour modifier" }, value || placeholder);
+  }
+  function NameInput({ value, onCommit, placeholder }) {
+    const [temp, setTemp] = useState(value);
+    useEffect(() => {
+      setTemp(value);
+    }, [value]);
+    return /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        value: temp,
+        placeholder,
+        onChange: (e) => setTemp(e.target.value),
+        onBlur: () => {
+          if (temp !== value) onCommit(temp);
+        },
+        style: { ...inputStyle, flex: 1, background: "transparent", border: "none", padding: 0, fontWeight: 500, fontSize: 13 }
+      }
+    );
+  }
+  function gaugeColor(pct) {
+    if (pct < 50) return COLORS.green;
+    if (pct < 75) return COLORS.yellow;
+    if (pct < 100) return COLORS.orange;
+    return COLORS.red;
+  }
+  function GaugeBar({ pct, label, sub }) {
+    const clamped = Math.max(0, Math.min(100, pct));
+    const color = gaugeColor(pct);
+    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "flex justify-between text-xs mb-1" }, /* @__PURE__ */ React.createElement("span", { style: { color: COLORS.sub } }, label), /* @__PURE__ */ React.createElement("span", { style: { color: COLORS.text } }, sub || `${Math.round(pct)}%`)), /* @__PURE__ */ React.createElement("div", { className: "w-full h-2.5 rounded-full overflow-hidden", style: { background: "rgba(255,255,255,0.06)" } }, /* @__PURE__ */ React.createElement("div", { className: "h-full rounded-full", style: { width: `${clamped}%`, background: color, transition: "width 0.3s" } })));
+  }
+  function CroissanceBadge({ label, deltaEuro, deltaPct, cardClass = "p-4" }) {
+    const positive = deltaEuro >= 0;
+    const color = deltaEuro === 0 ? COLORS.sub : positive ? COLORS.green : COLORS.red;
+    const Icon = positive ? ArrowUp : ArrowDown;
+    return /* @__PURE__ */ React.createElement(Card, { className: cardClass }, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, label), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1.5" }, deltaEuro !== 0 && /* @__PURE__ */ React.createElement(Icon, { size: 18, color }), /* @__PURE__ */ React.createElement("span", { className: "text-lg font-bold", style: { color } }, positive && deltaEuro !== 0 ? "+" : "", Number.isFinite(deltaPct) ? deltaPct.toFixed(1) : "0.0", "%")), /* @__PURE__ */ React.createElement("div", { className: "text-sm", style: { color } }, positive ? "+" : "", fmt(deltaEuro)));
+  }
+  function monthTotals(monthObj) {
+    const income = (monthObj.incomeTx || []).reduce((s, t) => s + Number(t.montant || 0), 0);
+    const expenses = (monthObj.expenseTx || []).reduce((s, t) => s + Number(t.montant || 0), 0);
+    return { income, expenses };
+  }
+  function IncomeExpenseChart({ yearData, selectedIdx, onSelect }) {
+    const chartData = MONTHS_FR.map((m, i) => {
+      const t2 = monthTotals(yearData[m] || emptyMonth());
+      return { name: MONTHS_FR_SHORT[i], income: t2.income, expenses: t2.expenses };
+    });
+    const t = monthTotals(yearData[MONTHS_FR[selectedIdx]] || emptyMonth());
+    return /* @__PURE__ */ React.createElement(Card, { className: "p-5 md:col-span-2" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-baseline gap-6 mb-2" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: "text-sm", style: { color: COLORS.sub } }, "Revenus "), /* @__PURE__ */ React.createElement("span", { className: "text-lg font-semibold", style: { color: COLORS.text } }, fmt(t.income))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: "text-sm", style: { color: COLORS.sub } }, "D\xE9penses "), /* @__PURE__ */ React.createElement("span", { className: "text-lg font-semibold", style: { color: COLORS.pink } }, fmt(t.expenses)))), /* @__PURE__ */ React.createElement(ResponsiveContainer, { width: "100%", height: 240 }, /* @__PURE__ */ React.createElement(ComposedChart, { data: chartData, margin: { top: 10, right: 10, left: -20, bottom: 0 }, onClick: (e) => {
+      if (e && e.activeTooltipIndex != null) onSelect(e.activeTooltipIndex);
+    } }, /* @__PURE__ */ React.createElement(CartesianGrid, { stroke: "rgba(255,255,255,0.05)", vertical: false }), /* @__PURE__ */ React.createElement(XAxis, { dataKey: "name", tick: { fill: COLORS.sub, fontSize: 11 }, axisLine: false, tickLine: false }), /* @__PURE__ */ React.createElement(YAxis, { tick: { fill: COLORS.sub, fontSize: 11 }, axisLine: false, tickLine: false, tickFormatter: fmtK }), /* @__PURE__ */ React.createElement(Tooltip, { contentStyle: { background: "#1b1e52", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10 }, labelStyle: { color: COLORS.text }, formatter: (v) => fmt(v), cursor: { fill: "rgba(255,255,255,0.04)" } }), /* @__PURE__ */ React.createElement("defs", null, /* @__PURE__ */ React.createElement("linearGradient", { id: "barGrad", x1: "0", y1: "0", x2: "0", y2: "1" }, /* @__PURE__ */ React.createElement("stop", { offset: "0%", stopColor: COLORS.blueLight }), /* @__PURE__ */ React.createElement("stop", { offset: "100%", stopColor: COLORS.blue }))), /* @__PURE__ */ React.createElement(Bar, { dataKey: "income", name: "Revenus", radius: [6, 6, 6, 6], barSize: 16, cursor: "pointer" }, chartData.map((_, i) => /* @__PURE__ */ React.createElement(Cell, { key: i, fill: i === selectedIdx ? "url(#barGrad)" : "rgba(91,110,245,0.35)" }))), /* @__PURE__ */ React.createElement(Line, { type: "monotone", dataKey: "expenses", name: "D\xE9penses", stroke: COLORS.pink, strokeWidth: 2.5, dot: false }))), /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mt-1", style: { color: COLORS.sub } }, "Calcul\xE9 automatiquement \xE0 partir des tableaux Revenus / D\xE9penses."));
+  }
+  function RatioDonut({ income, expenses, title = "Ratio" }) {
+    const total = income + expenses;
+    const pct = total > 0 ? Math.round(income / total * 100) : 0;
+    const data = total > 0 ? [{ name: "Revenus", value: income }, { name: "D\xE9penses", value: expenses }] : [{ name: "vide", value: 1 }];
+    return /* @__PURE__ */ React.createElement(Card, { className: "p-5 flex flex-col items-center justify-between" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm self-start", style: { color: COLORS.sub } }, title), /* @__PURE__ */ React.createElement("div", { style: { width: "100%", height: 160, position: "relative" } }, /* @__PURE__ */ React.createElement(ResponsiveContainer, { width: "100%", height: "100%" }, /* @__PURE__ */ React.createElement(PieChart, null, /* @__PURE__ */ React.createElement("defs", null, /* @__PURE__ */ React.createElement("linearGradient", { id: "ratioGrad", x1: "0", y1: "0", x2: "1", y2: "1" }, /* @__PURE__ */ React.createElement("stop", { offset: "0%", stopColor: COLORS.blueLight }), /* @__PURE__ */ React.createElement("stop", { offset: "100%", stopColor: COLORS.violet }))), /* @__PURE__ */ React.createElement(Pie, { data, dataKey: "value", innerRadius: 55, outerRadius: 75, startAngle: 90, endAngle: -270, stroke: "none" }, total > 0 ? [/* @__PURE__ */ React.createElement(Cell, { key: "a", fill: "url(#ratioGrad)" }), /* @__PURE__ */ React.createElement(Cell, { key: "b", fill: COLORS.pink })] : [/* @__PURE__ */ React.createElement(Cell, { key: "a", fill: "rgba(255,255,255,0.06)" })]))), /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 flex items-center justify-center" }, /* @__PURE__ */ React.createElement("span", { className: "text-3xl font-bold", style: { color: COLORS.text } }, pct, "%"))), /* @__PURE__ */ React.createElement("div", { className: "flex gap-4 text-xs mt-1" }, /* @__PURE__ */ React.createElement("span", { style: { color: COLORS.sub } }, /* @__PURE__ */ React.createElement("span", { className: "inline-block w-2 h-2 rounded-full mr-1", style: { background: COLORS.blueLight } }), "Revenus"), /* @__PURE__ */ React.createElement("span", { style: { color: COLORS.sub } }, /* @__PURE__ */ React.createElement("span", { className: "inline-block w-2 h-2 rounded-full mr-1", style: { background: COLORS.pink } }), "D\xE9penses")));
+  }
+  function BalanceCard({ soldeCompteCourant }) {
+    const positive = soldeCompteCourant >= 0;
+    return /* @__PURE__ */ React.createElement(Card, { className: "p-5 flex flex-col justify-between" }, /* @__PURE__ */ React.createElement("div", { className: "rounded-xl p-4 flex flex-col justify-between", style: { height: 110, background: "linear-gradient(135deg, #4A4FD8, #2E2A8F)", border: "1px solid rgba(255,255,255,0.12)" } }, /* @__PURE__ */ React.createElement("div", { className: "flex justify-between items-start" }, /* @__PURE__ */ React.createElement("div", { className: "w-8 h-6 rounded", style: { background: "linear-gradient(135deg,#E8C86B,#C9A24A)" } }), /* @__PURE__ */ React.createElement("span", { className: "text-white italic font-bold text-lg", style: { fontFamily: "Georgia, serif", letterSpacing: -1 } }, "VISA")), /* @__PURE__ */ React.createElement("div", { className: "text-white text-sm", style: { opacity: 0.9, letterSpacing: 2, filter: "blur(0.4px)" } }, "4532 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 8891")), /* @__PURE__ */ React.createElement("div", { className: "mt-4" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-1", style: { color: COLORS.sub } }, "Solde du compte courant"), /* @__PURE__ */ React.createElement("div", { className: "text-3xl font-bold", style: { color: positive ? COLORS.text : COLORS.pink } }, fmt(soldeCompteCourant)), /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mt-1", style: { color: COLORS.sub } }, "Calcul\xE9 automatiquement : revenus \u2212 d\xE9penses \u2212 virements sortants vers vos autres comptes.")));
+  }
+  function BudgetCard({ totalBudget, totalSpent }) {
+    const used = totalBudget > 0 ? Math.min(100, Math.round(totalSpent / totalBudget * 100)) : 0;
+    const color = gaugeColor(used);
+    const data = [{ value: used || 1e-4 }];
+    return /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "flex justify-between items-start mb-2" }, /* @__PURE__ */ React.createElement("span", { className: "text-sm", style: { color: COLORS.sub } }, "Budget mensuel"), /* @__PURE__ */ React.createElement("span", { className: "text-lg font-semibold", style: { color: COLORS.text } }, fmt(totalBudget))), /* @__PURE__ */ React.createElement("div", { style: { width: "100%", height: 160, position: "relative" } }, /* @__PURE__ */ React.createElement(ResponsiveContainer, { width: "100%", height: "100%" }, /* @__PURE__ */ React.createElement(PieChart, null, /* @__PURE__ */ React.createElement(Pie, { data: [{ value: 1 }], dataKey: "value", innerRadius: 55, outerRadius: 75, fill: "rgba(255,255,255,0.06)", stroke: "none" }), /* @__PURE__ */ React.createElement(Pie, { data, dataKey: "value", innerRadius: 55, outerRadius: 75, startAngle: 90, endAngle: 90 - used * 3.6, stroke: "none", cornerRadius: 20 }, /* @__PURE__ */ React.createElement(Cell, { fill: color })))), /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 flex flex-col items-center justify-center" }, /* @__PURE__ */ React.createElement("span", { className: "text-xs", style: { color: COLORS.sub } }, "Utilis\xE9"), /* @__PURE__ */ React.createElement("span", { className: "text-2xl font-bold", style: { color: COLORS.text } }, used, "%"))), /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mt-1 text-center", style: { color: COLORS.sub } }, fmt(totalSpent), " d\xE9pens\xE9s sur ", fmt(totalBudget), " (onglet Budget)"));
+  }
+  function InvestCard({ peaTotal, avTotal, lddsTotal, livretATotal }) {
+    const cats = [{ name: "PEA", value: peaTotal, fill: COLORS.violet }, { name: "Assurance Vie", value: avTotal, fill: COLORS.cyan }, { name: "LDDS", value: lddsTotal, fill: COLORS.gold }, { name: "Livret A", value: livretATotal, fill: COLORS.blueLight }];
+    const total = cats.reduce((s, c) => s + c.value, 0);
+    return /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "flex justify-between items-start mb-1" }, /* @__PURE__ */ React.createElement("span", { className: "text-sm", style: { color: COLORS.sub } }, "Investissements"), /* @__PURE__ */ React.createElement("span", { className: "text-lg font-semibold", style: { color: COLORS.text } }, fmt(total))), /* @__PURE__ */ React.createElement(ResponsiveContainer, { width: "100%", height: 140 }, /* @__PURE__ */ React.createElement(PieChart, null, /* @__PURE__ */ React.createElement(Pie, { data: cats, dataKey: "value", nameKey: "name", innerRadius: 40, outerRadius: 62, stroke: "none" }, cats.map((c, i) => /* @__PURE__ */ React.createElement(Cell, { key: i, fill: c.fill }))))), /* @__PURE__ */ React.createElement("div", { className: "flex flex-wrap gap-x-3 gap-y-1 text-[10px] mt-1", style: { color: COLORS.sub } }, cats.map((c) => /* @__PURE__ */ React.createElement("span", { key: c.name }, /* @__PURE__ */ React.createElement("span", { className: "inline-block w-2 h-2 rounded-full mr-1", style: { background: c.fill } }), c.name, " : ", fmt(c.value)))), /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mt-2", style: { color: COLORS.sub } }, "Calcul\xE9 automatiquement (capital + int\xE9r\xEAts compos\xE9s \u2212 frais) depuis les pages PEA / Assurance Vie / LDDS / Livret A."));
+  }
+  function FinGoalsCard({ objectifs, onUpdate, onAdd, onDelete, compact = false }) {
+    const saved = objectifs.reduce((s, o) => s + Number(o.montant || 0), 0);
+    const target = objectifs.reduce((s, o) => s + Number(o.cible || 0), 0);
+    const pct = target > 0 ? Math.round(saved / target * 100) : 0;
+    return /* @__PURE__ */ React.createElement(Card, { className: compact ? "p-4" : "p-5 md:col-span-2" }, /* @__PURE__ */ React.createElement("div", { className: "flex justify-between items-start mb-2" }, /* @__PURE__ */ React.createElement("span", { className: "text-sm", style: { color: COLORS.sub } }, "Objectifs financiers"), /* @__PURE__ */ React.createElement("span", { className: "text-sm", style: { color: COLORS.text } }, fmt(saved), " / ", fmt(target), " (", pct, "%)")), /* @__PURE__ */ React.createElement("div", { className: "flex flex-col gap-1.5" }, objectifs.length === 0 && /* @__PURE__ */ React.createElement("div", { className: "text-xs", style: { color: COLORS.sub } }, compact ? "Aucun objectif \u2014 \xE0 d\xE9finir dans l'onglet Objectifs." : "Aucun objectif pour le moment \u2014 ajoutez-en un ci-dessous."), objectifs.map((o, i) => {
+      const opct = Number(o.cible) > 0 ? Math.min(100, Math.round(Number(o.montant) / Number(o.cible) * 100)) : 0;
+      if (compact) {
+        return /* @__PURE__ */ React.createElement("div", { key: o.id, className: "text-xs" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 mb-1" }, /* @__PURE__ */ React.createElement("span", { className: "w-2 h-2 rounded-full shrink-0", style: { background: PIE_PALETTE[i % PIE_PALETTE.length] } }), /* @__PURE__ */ React.createElement("span", { className: "flex-1 truncate", style: { color: COLORS.text } }, o.nom || "Objectif"), /* @__PURE__ */ React.createElement("span", { style: { color: COLORS.sub } }, opct, "%")), /* @__PURE__ */ React.createElement("div", { className: "w-full h-1.5 rounded-full overflow-hidden", style: { background: "rgba(255,255,255,0.06)" } }, /* @__PURE__ */ React.createElement("div", { className: "h-full rounded-full", style: { width: `${opct}%`, background: PIE_PALETTE[i % PIE_PALETTE.length] } })));
+      }
+      return /* @__PURE__ */ React.createElement("div", { key: o.id, className: "rounded-xl p-2.5", style: { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" } }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 mb-1.5" }, /* @__PURE__ */ React.createElement("span", { className: "w-2.5 h-2.5 rounded-full shrink-0", style: { background: PIE_PALETTE[i % PIE_PALETTE.length] } }), /* @__PURE__ */ React.createElement(NameInput, { value: o.nom, placeholder: "Nom de l'objectif", onCommit: (v) => onUpdate(o.id, "nom", v) }), /* @__PURE__ */ React.createElement("button", { onClick: () => onDelete(o.id) }, /* @__PURE__ */ React.createElement(Trash2, { size: 13, color: COLORS.sub }))), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1 text-[11px] mb-1.5", style: { color: COLORS.sub } }, /* @__PURE__ */ React.createElement(EditableNumber, { value: o.montant, onCommit: (v) => onUpdate(o.id, "montant", v) }), /* @__PURE__ */ React.createElement("span", null, "/"), /* @__PURE__ */ React.createElement(EditableNumber, { value: o.cible, onCommit: (v) => onUpdate(o.id, "cible", v) })), /* @__PURE__ */ React.createElement("div", { className: "w-full h-1.5 rounded-full overflow-hidden", style: { background: "rgba(255,255,255,0.06)" } }, /* @__PURE__ */ React.createElement("div", { className: "h-full rounded-full", style: { width: `${opct}%`, background: PIE_PALETTE[i % PIE_PALETTE.length] } })));
+    }), !compact && /* @__PURE__ */ React.createElement("button", { onClick: onAdd, className: "flex items-center justify-center gap-1 rounded-xl py-2 text-xs font-medium", style: { background: "rgba(255,255,255,0.04)", color: COLORS.sub, border: "1px dashed rgba(255,255,255,0.15)" } }, /* @__PURE__ */ React.createElement(Plus, { size: 13 }), " Ajouter un objectif")));
+  }
+  function SummaryList({ month, investTotal, objSaved, soldeCompteCourant, surplus }) {
+    const { income, expenses } = monthTotals(month);
+    const rows = [
+      { label: "Revenus", value: income, icon: TrendingUp, color: COLORS.cyan },
+      { label: "D\xE9penses", value: expenses, icon: TrendingDown, color: COLORS.pink },
+      { label: "Solde", value: soldeCompteCourant, icon: Wallet, color: COLORS.blueLight },
+      { label: "Investissements", value: investTotal, icon: BarChart3, color: COLORS.violet },
+      { label: "Objectifs \xE9pargn\xE9s", value: objSaved, icon: Target, color: COLORS.gold },
+      { label: "Surplus", value: surplus, icon: PiggyBank, color: surplus >= 0 ? COLORS.green : COLORS.red }
+    ];
+    return /* @__PURE__ */ React.createElement(Card, { className: "p-4 flex flex-col gap-1" }, rows.map((r) => /* @__PURE__ */ React.createElement("div", { key: r.label, className: "flex items-center gap-3 py-2 px-1 rounded-xl", style: { borderBottom: "1px solid rgba(255,255,255,0.04)" } }, /* @__PURE__ */ React.createElement("div", { className: "w-8 h-8 rounded-full flex items-center justify-center shrink-0", style: { background: `${r.color}22` } }, /* @__PURE__ */ React.createElement(r.icon, { size: 15, color: r.color })), /* @__PURE__ */ React.createElement("span", { className: "text-sm flex-1", style: { color: COLORS.text } }, r.label), /* @__PURE__ */ React.createElement("span", { className: "text-sm font-medium", style: { color: r.label === "Surplus" ? r.color : COLORS.text } }, r.label === "Surplus" && r.value >= 0 ? "+" : "", fmt(r.value)))));
+  }
+  function PatrimoineListWidget({ compteCourant, ldds, livretA, pea, av }) {
+    const total = compteCourant + ldds + livretA + pea + av;
+    const rows = [
+      { label: "Compte courant", value: compteCourant },
+      { label: "LDDS", value: ldds },
+      { label: "Livret A", value: livretA },
+      { label: "PEA", value: pea },
+      { label: "Assurance Vie", value: av }
+    ];
+    return /* @__PURE__ */ React.createElement(Card, { className: "p-5 md:col-span-2" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-3", style: { color: COLORS.sub } }, "Patrimoine"), /* @__PURE__ */ React.createElement("div", { className: "flex flex-col md:flex-row gap-4 items-stretch" }, /* @__PURE__ */ React.createElement("div", { className: "flex-1 flex flex-col gap-1" }, rows.map((r) => /* @__PURE__ */ React.createElement("div", { key: r.label, className: "flex items-center justify-between text-sm py-1.5", style: { borderBottom: "1px solid rgba(255,255,255,0.05)" } }, /* @__PURE__ */ React.createElement("span", { style: { color: COLORS.sub } }, r.label), /* @__PURE__ */ React.createElement("span", { style: { color: COLORS.text } }, fmt(r.value))))), /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center justify-center rounded-2xl px-6 py-4", style: { background: "rgba(139,92,246,0.12)", minWidth: 160 } }, /* @__PURE__ */ React.createElement("span", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "Patrimoine total"), /* @__PURE__ */ React.createElement("span", { className: "text-2xl font-bold text-center", style: { color: COLORS.text } }, fmt(total)))));
+  }
+  function SurplusHistoryWidget({ compteCourantSchedule, years, selectedYear }) {
+    const yearRows = MONTHS_FR.map((m, i) => ({ name: MONTHS_FR_SHORT[i], surplus: compteCourantRowAt(compteCourantSchedule, selectedYear, i).surplus }));
+    const yearlyTotals = [...years].sort((a, b) => a - b).map((y) => {
+      let total = 0;
+      for (let m = 0; m < 12; m++) total += compteCourantRowAt(compteCourantSchedule, y, m).surplus;
+      return { year: y, total };
+    });
+    return /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-3", style: { color: COLORS.sub } }, "Historique des surplus \u2014 ", selectedYear), /* @__PURE__ */ React.createElement(ResponsiveContainer, { width: "100%", height: 180 }, /* @__PURE__ */ React.createElement(ComposedChart, { data: yearRows }, /* @__PURE__ */ React.createElement(CartesianGrid, { stroke: "rgba(255,255,255,0.05)", vertical: false }), /* @__PURE__ */ React.createElement(XAxis, { dataKey: "name", tick: { fill: COLORS.sub, fontSize: 11 }, axisLine: false, tickLine: false }), /* @__PURE__ */ React.createElement(YAxis, { tick: { fill: COLORS.sub, fontSize: 11 }, axisLine: false, tickLine: false, tickFormatter: fmtK }), /* @__PURE__ */ React.createElement(Tooltip, { contentStyle: { background: "#1b1e52", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10 }, formatter: (v) => fmt(v) }), /* @__PURE__ */ React.createElement(Bar, { dataKey: "surplus", radius: [4, 4, 4, 4], barSize: 16 }, yearRows.map((r, i) => /* @__PURE__ */ React.createElement(Cell, { key: i, fill: r.surplus >= 0 ? COLORS.green : COLORS.red }))))), /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mt-3 mb-2", style: { color: COLORS.sub } }, "Total par ann\xE9e"), /* @__PURE__ */ React.createElement("div", { className: "flex flex-wrap gap-3" }, yearlyTotals.map((y) => /* @__PURE__ */ React.createElement("div", { key: y.year, className: "flex items-center gap-2 text-xs" }, /* @__PURE__ */ React.createElement("span", { style: { color: COLORS.sub } }, y.year), /* @__PURE__ */ React.createElement("span", { style: { color: y.total >= 0 ? COLORS.green : COLORS.red, fontWeight: 600 } }, y.total >= 0 ? "+" : "", fmt(y.total))))));
+  }
+  function TransactionTable({ kind, year, monthIdx, monthKey, month, categories, onAdd, onRemove, gauge }) {
+    const isExpense = kind === "expense";
+    const cats = isExpense ? categories : INCOME_CATEGORIES;
+    const maxDay = daysInMonth(year, monthIdx);
+    const [day, setDay] = useState("");
+    const [libelle, setLibelle] = useState("");
+    const [montant, setMontant] = useState("");
+    const [categorie, setCategorie] = useState(cats[0] || "Autre");
+    const [autoTouched, setAutoTouched] = useState(false);
+    useEffect(() => {
+      if (isExpense && libelle && !autoTouched) {
+        const guess = guessCategory(libelle, cats);
+        if (guess) setCategorie(guess);
+      }
+    }, [libelle]);
+    const txs = (isExpense ? month.expenseTx : month.incomeTx) || [];
+    const sorted = [...txs].sort((a, b) => dayOf(a.date) - dayOf(b.date));
+    const total = txs.reduce((s, t) => s + Number(t.montant || 0), 0);
+    const byCategory = {};
+    txs.forEach((t) => {
+      byCategory[t.categorie] = (byCategory[t.categorie] || 0) + Number(t.montant || 0);
+    });
+    function submit(e) {
+      e.preventDefault();
+      if (!libelle || !montant) return;
+      const d = Math.min(Math.max(1, Number(day) || 1), maxDay);
+      const date = `${year}-${String(monthIdx + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      onAdd({ id: Date.now() + Math.random(), date, libelle, montant: Number(montant), categorie });
+      setDay("");
+      setLibelle("");
+      setMontant("");
+      setCategorie(cats[0] || "Autre");
+      setAutoTouched(false);
+    }
+    return /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 gap-4" }, gauge, /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-3", style: { color: COLORS.sub } }, isExpense ? "D\xE9penses" : "Revenus", " \u2014 ", monthKey[0] + monthKey.slice(1).toLowerCase(), " ", year), /* @__PURE__ */ React.createElement("form", { onSubmit: submit, className: "flex flex-wrap gap-2 mb-3 items-end" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col", style: { width: 66 } }, /* @__PURE__ */ React.createElement("label", { className: "text-[10px] mb-0.5", style: { color: COLORS.sub } }, "Jour"), /* @__PURE__ */ React.createElement("input", { type: "number", min: 1, max: maxDay, placeholder: "1", value: day, onChange: (e) => setDay(e.target.value), style: inputStyle })), /* @__PURE__ */ React.createElement("div", { className: "flex flex-col flex-1", style: { minWidth: 140 } }, /* @__PURE__ */ React.createElement("label", { className: "text-[10px] mb-0.5", style: { color: COLORS.sub } }, "Libell\xE9"), /* @__PURE__ */ React.createElement("input", { type: "text", placeholder: isExpense ? "ex : Carrefour" : "ex : Salaire", value: libelle, onChange: (e) => setLibelle(e.target.value), style: inputStyle })), /* @__PURE__ */ React.createElement("div", { className: "flex flex-col", style: { width: 100 } }, /* @__PURE__ */ React.createElement("label", { className: "text-[10px] mb-0.5", style: { color: COLORS.sub } }, "Montant (\u20AC)"), /* @__PURE__ */ React.createElement("input", { type: "number", step: "0.01", placeholder: "32", value: montant, onChange: (e) => setMontant(e.target.value), style: inputStyle })), /* @__PURE__ */ React.createElement("div", { className: "flex flex-col" }, /* @__PURE__ */ React.createElement("label", { className: "text-[10px] mb-0.5", style: { color: COLORS.sub } }, "Cat\xE9gorie"), /* @__PURE__ */ React.createElement("select", { value: categorie, onChange: (e) => {
+      setCategorie(e.target.value);
+      setAutoTouched(true);
+    }, style: inputStyle }, cats.map((c) => /* @__PURE__ */ React.createElement("option", { key: c, value: c }, c)))), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium", style: { background: `linear-gradient(135deg, ${COLORS.violet}, ${COLORS.pink})`, color: "#fff" } }, /* @__PURE__ */ React.createElement(Plus, { size: 14 }), " Ajouter")), isExpense && cats.length <= 1 && /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mb-2", style: { color: COLORS.orange } }, "D\xE9finissez vos cat\xE9gories de d\xE9penses dans l'onglet Budget pour les retrouver ici."), /* @__PURE__ */ React.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ React.createElement("table", { className: "w-full text-xs", style: { minWidth: 420 } }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", { style: { color: COLORS.sub } }, /* @__PURE__ */ React.createElement("th", { className: "text-left pb-2 font-normal" }, "Jour"), /* @__PURE__ */ React.createElement("th", { className: "text-left pb-2 font-normal" }, "Libell\xE9"), /* @__PURE__ */ React.createElement("th", { className: "text-left pb-2 font-normal" }, "Cat\xE9gorie"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Montant"), /* @__PURE__ */ React.createElement("th", { className: "pb-2" }))), /* @__PURE__ */ React.createElement("tbody", null, sorted.map((t) => /* @__PURE__ */ React.createElement("tr", { key: t.id, style: { borderTop: "1px solid rgba(255,255,255,0.05)" } }, /* @__PURE__ */ React.createElement("td", { className: "py-1.5", style: { color: COLORS.sub } }, dayOf(t.date) || "\u2014"), /* @__PURE__ */ React.createElement("td", { className: "py-1.5", style: { color: COLORS.text } }, t.libelle), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 whitespace-nowrap", style: { color: COLORS.sub } }, t.categorie), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right whitespace-nowrap", style: { color: COLORS.text } }, fmt(t.montant)), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right" }, /* @__PURE__ */ React.createElement("button", { onClick: () => onRemove(t.id) }, /* @__PURE__ */ React.createElement(Trash2, { size: 13, color: COLORS.sub }))))), sorted.length === 0 && /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { colSpan: 5, className: "py-6 text-center", style: { color: COLORS.sub } }, "Aucune transaction ce mois-ci"))), sorted.length > 0 && /* @__PURE__ */ React.createElement("tfoot", null, /* @__PURE__ */ React.createElement("tr", { style: { borderTop: "1px solid rgba(255,255,255,0.12)" } }, /* @__PURE__ */ React.createElement("td", { colSpan: 3, className: "pt-2 font-medium", style: { color: COLORS.text } }, "Total"), /* @__PURE__ */ React.createElement("td", { className: "pt-2 text-right font-semibold whitespace-nowrap", style: { color: COLORS.text } }, fmt(total)), /* @__PURE__ */ React.createElement("td", null))))), Object.keys(byCategory).length > 0 && /* @__PURE__ */ React.createElement("div", { className: "mt-5" }, /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mb-2", style: { color: COLORS.sub } }, "R\xE9partition par cat\xE9gorie"), /* @__PURE__ */ React.createElement("div", { className: "flex flex-col gap-1.5" }, Object.entries(byCategory).sort((a, b) => b[1] - a[1]).map(([cat, val]) => /* @__PURE__ */ React.createElement("div", { key: cat, className: "flex items-center gap-2 text-xs" }, /* @__PURE__ */ React.createElement("span", { style: { color: COLORS.sub, width: 160, flexShrink: 0 }, className: "truncate" }, cat), /* @__PURE__ */ React.createElement("div", { className: "flex-1 h-1.5 rounded-full", style: { background: "rgba(255,255,255,0.06)" } }, /* @__PURE__ */ React.createElement("div", { className: "h-1.5 rounded-full", style: { width: `${total > 0 ? Math.min(100, val / total * 100) : 0}%`, background: isExpense ? categoryColor(cats, cat) : COLORS.cyan } })), /* @__PURE__ */ React.createElement("span", { style: { color: COLORS.text, width: 70, textAlign: "right", flexShrink: 0 } }, fmt(val))))))));
+  }
+  function BudgetTab({ categories, currentMonth, onAddCategory, onRenameCategory, onSetBudget, onDeleteCategory }) {
+    const [newName, setNewName] = useState("");
+    const catNames = categories.map((c) => c.nom);
+    const spentByCategory = {};
+    (currentMonth.expenseTx || []).forEach((t) => {
+      spentByCategory[t.categorie] = (spentByCategory[t.categorie] || 0) + Number(t.montant || 0);
+    });
+    const totalBudget = categories.reduce((s, c) => s + Number(c.budgetMensuel || 0), 0);
+    const pieData = categories.filter((c) => Number(c.budgetMensuel) > 0).map((c) => ({ name: c.nom, value: Number(c.budgetMensuel) }));
+    function submitNew(e) {
+      e.preventDefault();
+      if (!newName.trim()) return;
+      onAddCategory(newName.trim());
+      setNewName("");
+    }
+    return /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 gap-4" }, /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-3", style: { color: COLORS.sub } }, "R\xE9partition du budget (", fmt(totalBudget), " / mois)"), pieData.length > 0 ? /* @__PURE__ */ React.createElement(ResponsiveContainer, { width: "100%", height: 220 }, /* @__PURE__ */ React.createElement(PieChart, null, /* @__PURE__ */ React.createElement(Pie, { data: pieData, dataKey: "value", nameKey: "name", innerRadius: 0, outerRadius: 85, label: (e) => `${e.name} ${Math.round(e.value / totalBudget * 100)}%`, labelLine: false }, pieData.map((d, i) => /* @__PURE__ */ React.createElement(Cell, { key: i, fill: categoryColor(catNames, d.name) }))), /* @__PURE__ */ React.createElement(Tooltip, { contentStyle: { background: "#1b1e52", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10 }, formatter: (v) => fmt(v) }))) : /* @__PURE__ */ React.createElement("div", { className: "text-xs py-8 text-center", style: { color: COLORS.sub } }, "D\xE9finissez un budget pour au moins une cat\xE9gorie ci-dessous.")), /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-3", style: { color: COLORS.sub } }, "D\xE9penses vs budget \u2014 mois en cours"), /* @__PURE__ */ React.createElement("div", { className: "flex flex-col gap-3" }, categories.map((c) => {
+      const spent = spentByCategory[c.nom] || 0;
+      const budget = Number(c.budgetMensuel) || 0;
+      const pct = budget > 0 ? Math.round(spent / budget * 100) : spent > 0 ? 100 : 0;
+      const exceeded = budget > 0 && spent > budget;
+      return /* @__PURE__ */ React.createElement("div", { key: c.id }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 mb-1" }, /* @__PURE__ */ React.createElement("span", { className: "w-2.5 h-2.5 rounded-full shrink-0", style: { background: categoryColor(catNames, c.nom) } }), /* @__PURE__ */ React.createElement("span", { style: exceeded ? { color: COLORS.red, fontWeight: 600 } : void 0 }, /* @__PURE__ */ React.createElement(NameInput, { value: c.nom, placeholder: "Cat\xE9gorie", onCommit: (v) => onRenameCategory(c.id, v) })), /* @__PURE__ */ React.createElement("span", { className: "text-[11px] flex-1 text-right", style: { color: exceeded ? COLORS.red : COLORS.sub } }, fmt(spent), " / ", /* @__PURE__ */ React.createElement(EditableNumber, { value: c.budgetMensuel, onCommit: (v) => onSetBudget(c.id, v) })), /* @__PURE__ */ React.createElement("button", { onClick: () => onDeleteCategory(c.id) }, /* @__PURE__ */ React.createElement(Trash2, { size: 13, color: COLORS.sub }))), /* @__PURE__ */ React.createElement("div", { className: "w-full h-3 rounded-full overflow-hidden", style: { background: "rgba(255,255,255,0.06)" } }, /* @__PURE__ */ React.createElement("div", { className: "h-full rounded-full", style: { width: `${Math.min(100, pct)}%`, background: gaugeColor(pct), transition: "width 0.3s" } })));
+    }), categories.length === 0 && /* @__PURE__ */ React.createElement("div", { className: "text-xs", style: { color: COLORS.sub } }, "Aucune cat\xE9gorie \u2014 ajoutez-en une ci-dessous.")), /* @__PURE__ */ React.createElement("form", { onSubmit: submitNew, className: "flex items-end gap-2 mt-4 pt-3", style: { borderTop: "1px solid rgba(255,255,255,0.06)" } }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col flex-1" }, /* @__PURE__ */ React.createElement("label", { className: "text-[10px] mb-0.5", style: { color: COLORS.sub } }, "Nouvelle cat\xE9gorie"), /* @__PURE__ */ React.createElement("input", { type: "text", placeholder: "ex : Bar", value: newName, onChange: (e) => setNewName(e.target.value), style: inputStyle })), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium", style: { background: `linear-gradient(135deg, ${COLORS.violet}, ${COLORS.pink})`, color: "#fff" } }, /* @__PURE__ */ React.createElement(Plus, { size: 14 }), " Ajouter"))));
+  }
+  function LivretPage({ title, color, dataByYear, years, settings, selectedYear, onUpdateVersement, onSettings, plafond }) {
+    const schedule = computeLivretSchedule(dataByYear, years, settings.soldeInitial, settings.tauxAnnuelPct);
+    const lastRow = schedule[schedule.length - 1] || { valeur: 0 };
+    const valeurActuelle = lastRow.valeur;
+    const versementsCumules = Number(settings.soldeInitial || 0) + schedule.reduce((s, r) => s + r.versement, 0);
+    const plusValue = valeurActuelle - versementsCumules;
+    const yearRows = MONTHS_FR.map((m, i) => {
+      const r = livretRowAt(schedule, selectedYear, i);
+      return { month: m, short: MONTHS_FR_SHORT[i], versement: r.versement, valeur: r.valeur };
+    });
+    const totalVersementAnnee = yearRows.reduce((s, r) => s + r.versement, 0);
+    const valeurFinAnnee = yearRows[11].valeur;
+    const rPrevYearEnd = livretRowAt(schedule, selectedYear - 1, 11);
+    const valeurDebutAnnee = rPrevYearEnd.valeur || Number(settings.soldeInitial || 0);
+    const gainsAnnee = valeurFinAnnee - valeurDebutAnnee - totalVersementAnnee;
+    return /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 gap-4" }, /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4" }, /* @__PURE__ */ React.createElement(Card, { className: "p-4" }, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "Valeur actuelle"), /* @__PURE__ */ React.createElement("div", { className: "text-xl font-bold", style: { color: COLORS.text } }, fmt(valeurActuelle)), plafond && /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mt-1", style: { color: valeurActuelle >= plafond ? COLORS.red : COLORS.sub } }, "Plafond : ", fmt(plafond))), /* @__PURE__ */ React.createElement(Card, { className: "p-4" }, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "Versements cumul\xE9s"), /* @__PURE__ */ React.createElement("div", { className: "text-xl font-bold", style: { color: COLORS.text } }, fmt(versementsCumules))), /* @__PURE__ */ React.createElement(Card, { className: "p-4" }, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "Int\xE9r\xEAts / plus-value"), /* @__PURE__ */ React.createElement("div", { className: "text-xl font-bold", style: { color: plusValue >= 0 ? COLORS.cyan : COLORS.pink } }, plusValue >= 0 ? "+" : "", fmt(plusValue)))), /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-3", style: { color: COLORS.sub } }, "R\xE9glages des virements mensuels"), /* @__PURE__ */ React.createElement("div", { className: "flex flex-wrap gap-8" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "Virement mensuel programm\xE9"), /* @__PURE__ */ React.createElement("div", { className: "text-base font-medium", style: { color: COLORS.text } }, /* @__PURE__ */ React.createElement(EditableNumber, { value: settings.versementMensuel, onCommit: (v) => onSettings("versementMensuel", v) }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "Taux d'int\xE9r\xEAt annuel"), /* @__PURE__ */ React.createElement("div", { className: "text-base font-medium", style: { color: COLORS.text } }, /* @__PURE__ */ React.createElement(EditableNumber, { value: settings.tauxAnnuelPct, suffix: " %/an", decimals: 2, onCommit: (v) => onSettings("tauxAnnuelPct", v) }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "Solde de d\xE9part (avant suivi)"), /* @__PURE__ */ React.createElement("div", { className: "text-base font-medium", style: { color: COLORS.text } }, /* @__PURE__ */ React.createElement(EditableNumber, { value: settings.soldeInitial, onCommit: (v) => onSettings("soldeInitial", v) })))), /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mt-2", style: { color: COLORS.sub } }, "Le virement est normalement identique chaque mois \u2014 vous pouvez toutefois corriger un mois pr\xE9cis dans le tableau ci-dessous si besoin. La valeur du compte se calcule seule \xE0 partir de ces versements et du taux d'int\xE9r\xEAt.")), /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-3", style: { color: COLORS.sub } }, "\xC9volution \u2014 ", title), /* @__PURE__ */ React.createElement(ResponsiveContainer, { width: "100%", height: 220 }, /* @__PURE__ */ React.createElement(AreaChart, { data: yearRows }, /* @__PURE__ */ React.createElement("defs", null, /* @__PURE__ */ React.createElement("linearGradient", { id: `grad-livret-${title}`, x1: "0", y1: "0", x2: "0", y2: "1" }, /* @__PURE__ */ React.createElement("stop", { offset: "0%", stopColor: color, stopOpacity: 0.55 }), /* @__PURE__ */ React.createElement("stop", { offset: "100%", stopColor: color, stopOpacity: 0.02 }))), /* @__PURE__ */ React.createElement(CartesianGrid, { stroke: "rgba(255,255,255,0.05)", vertical: false }), /* @__PURE__ */ React.createElement(XAxis, { dataKey: "short", tick: { fill: COLORS.sub, fontSize: 11 }, axisLine: false, tickLine: false }), /* @__PURE__ */ React.createElement(YAxis, { tick: { fill: COLORS.sub, fontSize: 11 }, axisLine: false, tickLine: false, tickFormatter: fmtK }), /* @__PURE__ */ React.createElement(Tooltip, { contentStyle: { background: "#1b1e52", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10 }, formatter: (v) => fmt(v) }), /* @__PURE__ */ React.createElement(Area, { type: "monotone", dataKey: "valeur", name: "Valeur", stroke: color, strokeWidth: 2.5, fill: `url(#grad-livret-${title})` })))), /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-3", style: { color: COLORS.sub } }, "Bilan mensuel d\xE9taill\xE9 \u2014 ", selectedYear), /* @__PURE__ */ React.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ React.createElement("table", { className: "w-full text-xs", style: { minWidth: 400 } }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", { style: { color: COLORS.sub } }, /* @__PURE__ */ React.createElement("th", { className: "text-left pb-2 font-normal" }, "Mois"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Versement du mois"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Valeur du compte"))), /* @__PURE__ */ React.createElement("tbody", null, yearRows.map((r) => /* @__PURE__ */ React.createElement("tr", { key: r.month, style: { borderTop: "1px solid rgba(255,255,255,0.05)" } }, /* @__PURE__ */ React.createElement("td", { className: "py-1.5", style: { color: COLORS.text } }, r.month[0] + r.month.slice(1).toLowerCase()), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right" }, /* @__PURE__ */ React.createElement(EditableNumber, { value: r.versement, onCommit: (v) => onUpdateVersement(r.month, v) })), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right", style: { color: COLORS.sub }, title: "Calcul\xE9e automatiquement" }, fmt(r.valeur))))), /* @__PURE__ */ React.createElement("tfoot", null, /* @__PURE__ */ React.createElement("tr", { style: { borderTop: "1px solid rgba(255,255,255,0.12)" } }, /* @__PURE__ */ React.createElement("td", { className: "pt-2 font-medium", style: { color: COLORS.text } }, "Bilan de l'ann\xE9e"), /* @__PURE__ */ React.createElement("td", { className: "pt-2 text-right font-semibold", style: { color: COLORS.text } }, fmt(totalVersementAnnee)), /* @__PURE__ */ React.createElement("td", { className: "pt-2 text-right font-semibold", style: { color: COLORS.text } }, fmt(valeurFinAnnee), /* @__PURE__ */ React.createElement("div", { className: "text-[11px] font-normal", style: { color: gainsAnnee >= 0 ? COLORS.cyan : COLORS.pink } }, gainsAnnee >= 0 ? "+" : "", fmt(gainsAnnee), " de gains"))))))));
+  }
+  function VersementHistoryEditor({ label, history, onAdd, today }) {
+    const currentValue = versionedValueAt(history, today.year, today.monthIdx);
+    const [from, setFrom] = useState(nextMonthYM(today.year, today.monthIdx));
+    const [value, setValue] = useState("");
+    function submit(e) {
+      e.preventDefault();
+      if (value === "") return;
+      onAdd(from, Number(value));
+      setValue("");
+    }
+    const sorted = [...history || []].sort((a, b) => b.from.localeCompare(a.from));
+    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, label, " \u2014 montant actuel"), /* @__PURE__ */ React.createElement("div", { className: "text-base font-medium mb-2", style: { color: COLORS.text } }, fmt(currentValue), " / mois"), /* @__PURE__ */ React.createElement("form", { onSubmit: submit, className: "flex flex-wrap items-end gap-2 mb-2" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col" }, /* @__PURE__ */ React.createElement("label", { className: "text-[10px]", style: { color: COLORS.sub } }, "Nouveau montant \xE0 partir de"), /* @__PURE__ */ React.createElement("input", { type: "month", value: from, onChange: (e) => setFrom(e.target.value), style: { ...inputStyle, width: 130 } })), /* @__PURE__ */ React.createElement("div", { className: "flex flex-col" }, /* @__PURE__ */ React.createElement("label", { className: "text-[10px]", style: { color: COLORS.sub } }, "Montant \u20AC/mois"), /* @__PURE__ */ React.createElement("input", { type: "number", step: "0.01", value, onChange: (e) => setValue(e.target.value), style: { ...inputStyle, width: 90 } })), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "rounded-lg px-3 py-1.5 text-xs font-medium", style: { background: COLORS.violet, color: "#fff" } }, "Programmer")), sorted.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "text-[11px]", style: { color: COLORS.sub } }, "Historique : ", sorted.map((h) => `${h.from} \u2192 ${fmt(h.value)}`).join(" \xB7 ")));
+  }
+  function HoldingRow({ h, onEdit, onDelete, today, endYear, endMonthIdx, accountVersementHistory, fraisVersementPct, jourVersement, fraisAnnuelsGlobalPct }) {
+    const row = holdingValueAt(h, accountVersementHistory, fraisVersementPct, jourVersement, fraisAnnuelsGlobalPct, endYear, endMonthIdx, today);
+    const capitalActuel = row.capital;
+    const montantInvesti = row.cumulInvesti;
+    const valeurTotaleActuelle = holdingRealValue(h);
+    const evolution = montantInvesti > 0 ? (valeurTotaleActuelle - montantInvesti) / montantInvesti * 100 : 0;
+    return /* @__PURE__ */ React.createElement("tr", { style: { borderTop: "1px solid rgba(255,255,255,0.05)" } }, /* @__PURE__ */ React.createElement("td", { className: "py-1.5 whitespace-nowrap", style: { color: COLORS.text } }, /* @__PURE__ */ React.createElement(EditableText, { value: h.nom, placeholder: "Nom", onCommit: (v) => onEdit(h.id, "nom", v) })), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 whitespace-nowrap", style: { color: COLORS.sub } }, /* @__PURE__ */ React.createElement(EditableText, { value: h.sousJacent, placeholder: "\u2014", onCommit: (v) => onEdit(h.id, "sousJacent", v) })), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right" }, /* @__PURE__ */ React.createElement(EditableNumber, { value: h.allocationPct, suffix: " %", decimals: 0, onCommit: (v) => onEdit(h.id, "allocationPct", v) })), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-center whitespace-nowrap" }, /* @__PURE__ */ React.createElement("input", { type: "month", value: h.dateDebut || "", onChange: (e) => onEdit(h.id, "dateDebut", e.target.value), style: { ...inputStyle, width: 108, fontSize: 11 } })), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right" }, /* @__PURE__ */ React.createElement(EditableNumber, { value: h.capitalInitial, decimals: 0, onCommit: (v) => onEdit(h.id, "capitalInitial", v) })), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right whitespace-nowrap", style: { color: COLORS.sub }, title: "Calcul\xE9 : capital + int\xE9r\xEAts compos\xE9s selon le rendement, hors frais" }, fmt(capitalActuel)), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right" }, /* @__PURE__ */ React.createElement(EditableNumber, { value: h.nombreParts, suffix: "", decimals: 2, onCommit: (v) => onEdit(h.id, "nombreParts", v) })), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right" }, /* @__PURE__ */ React.createElement(EditableNumber, { value: h.valeurPart, decimals: 2, onCommit: (v) => onEdit(h.id, "valeurPart", v) })), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right font-medium whitespace-nowrap", style: { color: COLORS.text } }, fmt(valeurTotaleActuelle)), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right" }, /* @__PURE__ */ React.createElement(EditableNumber, { value: h.rendementPct, suffix: " %", decimals: 2, onCommit: (v) => onEdit(h.id, "rendementPct", v) })), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right" }, /* @__PURE__ */ React.createElement(EditableNumber, { value: h.fraisAnnuelsPct, suffix: " %", decimals: 2, onCommit: (v) => onEdit(h.id, "fraisAnnuelsPct", v) })), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right whitespace-nowrap", style: { color: evolution >= 0 ? COLORS.cyan : COLORS.pink } }, evolution >= 0 ? "+" : "", evolution.toFixed(1), "%"), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right" }, /* @__PURE__ */ React.createElement("button", { onClick: () => onDelete(h.id) }, /* @__PURE__ */ React.createElement(Trash2, { size: 13, color: COLORS.sub }))));
+  }
+  function fixedRendementHistory(pct) {
+    return [{ from: "2000-01", value: Number(pct) || 0 }];
+  }
+  function holdingValueAt(h, accountVersementHistory, fraisVersementPct, jourVersement, fraisAnnuelsGlobalPct, year, monthIdx, today) {
+    const schedule = computeInstrumentSchedule({
+      dateDebut: h.dateDebut || ymStr(today.year, today.monthIdx),
+      capitalInitial: h.capitalInitial,
+      versementHistory: accountVersementHistory,
+      allocationPct: h.allocationPct,
+      rendementHistory: fixedRendementHistory(h.rendementPct),
+      rendementIsYearly: false,
+      fraisAnnuelsPct: h.fraisAnnuelsPct,
+      fraisAnnuelsGlobalPct,
+      fraisVersementPct,
+      jourVersement,
+      endYear: year,
+      endMonthIdx: monthIdx,
+      today
+    });
+    return valueAtSelectedMonth(schedule, year, monthIdx);
+  }
+  function monthlyInterestForHolding(h, accountVersementHistory, fraisVersementPct, jourVersement, fraisAnnuelsGlobalPct, year, monthIdx, today) {
+    const cur = holdingValueAt(h, accountVersementHistory, fraisVersementPct, jourVersement, fraisAnnuelsGlobalPct, year, monthIdx, today);
+    const p = prevMonth(year, monthIdx);
+    const prev = holdingValueAt(h, accountVersementHistory, fraisVersementPct, jourVersement, fraisAnnuelsGlobalPct, p.year, p.monthIdx, today);
+    const versementThisMonth = cur.cumulInvesti - prev.cumulInvesti;
+    return cur.capital - prev.capital - versementThisMonth;
+  }
+  function computeFondsEuroValueAt(fondsEuro, versementFondsEuroHistory, fraisVersementFE, jourVersement, year, monthIdx, today) {
+    if (!fondsEuro) return 0;
+    const schedule = computeInstrumentSchedule({
+      dateDebut: fondsEuro.dateDebut || ymStr(today.year, today.monthIdx),
+      capitalInitial: fondsEuro.capitalInitial,
+      versementHistory: versementFondsEuroHistory,
+      allocationPct: 100,
+      rendementHistory: fondsEuro.rendementHistory,
+      rendementIsYearly: true,
+      fraisAnnuelsPct: fondsEuro.fraisAnnuelsPct,
+      fraisAnnuelsGlobalPct: 0,
+      fraisVersementPct: fraisVersementFE,
+      jourVersement,
+      endYear: year,
+      endMonthIdx: monthIdx,
+      today
+    });
+    return valueAtSelectedMonth(schedule, year, monthIdx).capital;
+  }
+  function computeCompteCourantSchedule(years, financeData, peaSettings, avSettings, lddsData, livretAData, today) {
+    let solde = 0;
+    const rows = [];
+    const sortedYears = [...years].sort((a, b) => a - b);
+    for (const y of sortedYears) {
+      const yearFin = financeData[y] || emptyFinanceYear();
+      for (let m = 0; m < 12; m++) {
+        const monthKey = MONTHS_FR[m];
+        const { income, expenses } = monthTotals(yearFin[monthKey] || emptyMonth());
+        const peaOut = landedVersementForMonth(peaSettings.versementHistory, peaSettings.jourVersement, y, m, today);
+        const avOut = landedVersementForMonth(avSettings.versementSupportsHistory, avSettings.jourVersement, y, m, today) + landedVersementForMonth(avSettings.versementFondsEuroHistory, avSettings.jourVersement, y, m, today);
+        const lddsOut = ((lddsData[y] || {})[monthKey] || {}).versement || 0;
+        const livretAOut = ((livretAData[y] || {})[monthKey] || {}).versement || 0;
+        const surplus = income - expenses - peaOut - avOut - lddsOut - livretAOut;
+        solde += surplus;
+        rows.push({ year: y, monthIdx: m, surplus, solde });
+      }
+    }
+    return rows;
+  }
+  function compteCourantRowAt(rows, year, monthIdx) {
+    return rows.find((r) => r.year === year && r.monthIdx === monthIdx) || { surplus: 0, solde: 0 };
+  }
+  function computeAccountTotals(year, monthIdx, peaHoldings, peaSettings, peaCashAtMonth, avHoldings, avSettings, avFondsEuro, today) {
+    const pea = peaHoldings.reduce((s, h) => s + holdingValueAt(h, peaSettings.versementHistory, peaSettings.fraisVersementPct, peaSettings.jourVersement, peaSettings.fraisAnnuelsGlobalPct, year, monthIdx, today).capital, 0) + (Number(peaCashAtMonth) || 0);
+    const avFraisVersementTitres = avSettings.fraisVersementSupportsPct !== void 0 ? avSettings.fraisVersementSupportsPct : avSettings.fraisVersementPct;
+    const avTitres = avHoldings.reduce((s, h) => s + holdingValueAt(h, avSettings.versementSupportsHistory, avFraisVersementTitres, avSettings.jourVersement, avSettings.fraisAnnuelsGlobalPct, year, monthIdx, today).capital, 0);
+    const avFe = computeFondsEuroValueAt(avFondsEuro, avSettings.versementFondsEuroHistory, avSettings.fraisVersementFondsEuroPct, avSettings.jourVersement, year, monthIdx, today);
+    return { pea, av: avTitres + avFe };
+  }
+  function computePatrimoineGrowth(year, monthIdx, financeData, peaHoldings, peaSettings, avHoldings, avSettings, avFondsEuro, lddsSchedule, livretASchedule, today) {
+    const yearFin = financeData[year] || emptyFinanceYear();
+    const monthKey = MONTHS_FR[monthIdx];
+    const { income, expenses } = monthTotals(yearFin[monthKey] || emptyMonth());
+    const peaInterest = peaHoldings.reduce((s, h) => s + monthlyInterestForHolding(h, peaSettings.versementHistory, peaSettings.fraisVersementPct, peaSettings.jourVersement, peaSettings.fraisAnnuelsGlobalPct, year, monthIdx, today), 0);
+    const avFraisVersementTitres = avSettings.fraisVersementSupportsPct !== void 0 ? avSettings.fraisVersementSupportsPct : avSettings.fraisVersementPct;
+    const avInterest = avHoldings.reduce((s, h) => s + monthlyInterestForHolding(h, avSettings.versementSupportsHistory, avFraisVersementTitres, avSettings.jourVersement, avSettings.fraisAnnuelsGlobalPct, year, monthIdx, today), 0);
+    const p = prevMonth(year, monthIdx);
+    const curFE = computeFondsEuroValueAt(avFondsEuro, avSettings.versementFondsEuroHistory, avSettings.fraisVersementFondsEuroPct, avSettings.jourVersement, year, monthIdx, today);
+    const prevFE = computeFondsEuroValueAt(avFondsEuro, avSettings.versementFondsEuroHistory, avSettings.fraisVersementFondsEuroPct, avSettings.jourVersement, p.year, p.monthIdx, today);
+    const feVersementThisMonth = landedVersementForMonth(avSettings.versementFondsEuroHistory, avSettings.jourVersement, year, monthIdx, today);
+    const feInterest = curFE - prevFE - feVersementThisMonth;
+    const lddsRow = livretRowAt(lddsSchedule, year, monthIdx);
+    const lddsPrevRow = livretRowAt(lddsSchedule, p.year, p.monthIdx);
+    const lddsInterest = lddsRow.valeur - lddsPrevRow.valeur - lddsRow.versement;
+    const laRow = livretRowAt(livretASchedule, year, monthIdx);
+    const laPrevRow = livretRowAt(livretASchedule, p.year, p.monthIdx);
+    const laInterest = laRow.valeur - laPrevRow.valeur - laRow.versement;
+    const totalInterest = peaInterest + avInterest + feInterest + lddsInterest + laInterest;
+    return { euro: income - expenses + totalInterest, income, expenses, totalInterest };
+  }
+  function HoldingsTable({ holdings, accountVersementHistory, fraisVersementPct, jourVersement, fraisAnnuelsGlobalPct, year, monthIdx, today, onEdit, onDelete, onAdd, label }) {
+    const totalAlloc = holdings.reduce((s, h) => s + (Number(h.allocationPct) || 0), 0);
+    return /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-1" }, /* @__PURE__ */ React.createElement("span", { className: "text-sm", style: { color: COLORS.sub } }, label), /* @__PURE__ */ React.createElement("span", { className: "text-[11px]", style: { color: Math.round(totalAlloc) === 100 ? COLORS.sub : COLORS.orange } }, "Total allou\xE9 : ", Math.round(totalAlloc), "%")), /* @__PURE__ */ React.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ React.createElement("table", { className: "w-full text-xs", style: { minWidth: 1100 } }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", { style: { color: COLORS.sub } }, /* @__PURE__ */ React.createElement("th", { className: "text-left pb-2 font-normal" }, "Nom"), /* @__PURE__ */ React.createElement("th", { className: "text-left pb-2 font-normal" }, "Sous-jacent"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Allocation"), /* @__PURE__ */ React.createElement("th", { className: "text-center pb-2 font-normal" }, "D\xE9but"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Capital initial"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Capital actuel"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Nombre de parts"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Valeur de la part"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Valeur totale actuelle"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Rendement/an"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Frais/an"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "\xC9volution"), /* @__PURE__ */ React.createElement("th", { className: "pb-2" }))), /* @__PURE__ */ React.createElement("tbody", null, holdings.map((h) => /* @__PURE__ */ React.createElement(
+      HoldingRow,
+      {
+        key: h.id,
+        h,
+        onEdit,
+        onDelete,
+        today,
+        endYear: year,
+        endMonthIdx: monthIdx,
+        accountVersementHistory,
+        fraisVersementPct,
+        jourVersement,
+        fraisAnnuelsGlobalPct
+      }
+    )), holdings.length === 0 && /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { colSpan: 13, className: "py-6 text-center", style: { color: COLORS.sub } }, "Aucune ligne pour le moment"))))), /* @__PURE__ */ React.createElement("button", { onClick: onAdd, className: "flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium mt-3", style: { background: "rgba(255,255,255,0.05)", color: COLORS.text } }, /* @__PURE__ */ React.createElement(Plus, { size: 14 }), " Ajouter une ligne"), /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mt-2", style: { color: COLORS.sub } }, "Capital actuel = mod\xE8le th\xE9orique (versements + int\xE9r\xEAts compos\xE9s selon le rendement). Nombre de parts et valeur de la part sont \xE0 renseigner vous-m\xEAme ; la valeur totale actuelle et l'\xE9volution s'en d\xE9duisent automatiquement."));
+  }
+  function holdingRealValue(h) {
+    return (Number(h.nombreParts) || 0) * (Number(h.valeurPart) || 0);
+  }
+  function HoldingsPie({ holdings, fondsEuro }) {
+    const parts = holdings.map((h) => ({ name: h.nom || "Sans nom", value: holdingRealValue(h) }));
+    if (fondsEuro) parts.push({ name: "Fonds euro", value: fondsEuro.value });
+    const total = parts.reduce((s, p) => s + p.value, 0);
+    const data = parts.filter((p) => p.value > 0);
+    return /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-2", style: { color: COLORS.sub } }, "R\xE9partition actuelle des fonds"), data.length > 0 ? /* @__PURE__ */ React.createElement(ResponsiveContainer, { width: "100%", height: 220 }, /* @__PURE__ */ React.createElement(PieChart, null, /* @__PURE__ */ React.createElement(Pie, { data, dataKey: "value", nameKey: "name", innerRadius: 0, outerRadius: 85, label: (e) => `${e.name} ${total > 0 ? Math.round(e.value / total * 100) : 0}%`, labelLine: false }, data.map((_, i) => /* @__PURE__ */ React.createElement(Cell, { key: i, fill: PIE_PALETTE[i % PIE_PALETTE.length] }))), /* @__PURE__ */ React.createElement(Tooltip, { contentStyle: { background: "#1b1e52", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10 }, formatter: (v) => fmt(v) }))) : /* @__PURE__ */ React.createElement("div", { className: "text-xs py-8 text-center", style: { color: COLORS.sub } }, "Aucune valeur \xE0 r\xE9partir pour le moment."));
+  }
+  function SecuritiesAccountPage({
+    title,
+    holdingsLabel,
+    color,
+    year,
+    monthIdx,
+    today,
+    settings,
+    onSettingsField,
+    onVersementAdd,
+    holdings,
+    onEditHolding,
+    onDeleteHolding,
+    onAddHolding,
+    fondsEuro,
+    onFondsEuroField,
+    onFondsEuroRendementAdd,
+    cashLabel,
+    cashValue,
+    mouvementsFonction
+  }) {
+    const fraisVersementTitres = settings.fraisVersementSupportsPct !== void 0 ? settings.fraisVersementSupportsPct : settings.fraisVersementPct;
+    const fraisVersementFE = settings.fraisVersementFondsEuroPct;
+    const accountVersementHistory = settings.versementHistory || settings.versementSupportsHistory;
+    const valeurTitresReel = holdings.reduce((s, h) => s + holdingRealValue(h), 0);
+    const coutTitres = holdings.reduce((s, h) => s + holdingValueAt(h, accountVersementHistory, fraisVersementTitres, settings.jourVersement, settings.fraisAnnuelsGlobalPct, year, monthIdx, today).cumulInvesti, 0);
+    const plusValueTitres = valeurTitresReel - coutTitres;
+    function fondsEuroValueAt(y, m) {
+      return computeFondsEuroValueAt(fondsEuro, settings.versementFondsEuroHistory, fraisVersementFE, settings.jourVersement, y, m, today);
+    }
+    const fondsEuroValue = fondsEuroValueAt(year, monthIdx);
+    const patrimoineTotal = valeurTitresReel + fondsEuroValue + (cashValue || 0);
+    const p = prevMonth(year, monthIdx);
+    const titresCapitalActuel = holdings.reduce((s, h) => s + holdingValueAt(h, accountVersementHistory, fraisVersementTitres, settings.jourVersement, settings.fraisAnnuelsGlobalPct, year, monthIdx, today).capital, 0);
+    const titresCapitalPrev = holdings.reduce((s, h) => s + holdingValueAt(h, accountVersementHistory, fraisVersementTitres, settings.jourVersement, settings.fraisAnnuelsGlobalPct, p.year, p.monthIdx, today).capital, 0);
+    const fondsEuroPrev = fondsEuroValueAt(p.year, p.monthIdx);
+    const totalActuelModele = titresCapitalActuel + fondsEuroValue + (cashValue || 0);
+    const totalPrevModele = titresCapitalPrev + fondsEuroPrev + (cashValue || 0);
+    const croissanceEuro = totalActuelModele - totalPrevModele;
+    const croissancePct = totalPrevModele > 0 ? croissanceEuro / totalPrevModele * 100 : 0;
+    const evolutionChartData = MONTHS_FR.map((m, i) => {
+      const tCap = holdings.reduce((s, h) => s + holdingValueAt(h, accountVersementHistory, fraisVersementTitres, settings.jourVersement, settings.fraisAnnuelsGlobalPct, year, i, today).capital, 0);
+      const fe = fondsEuroValueAt(year, i);
+      return { name: MONTHS_FR_SHORT[i], total: tCap + fe + (cashValue || 0) };
+    });
+    return /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 gap-4" }, /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 md:grid-cols-4 gap-3" }, /* @__PURE__ */ React.createElement(Card, { className: "p-4" }, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "Patrimoine total"), /* @__PURE__ */ React.createElement("div", { className: "text-lg font-bold", style: { color: COLORS.text } }, fmt(patrimoineTotal))), /* @__PURE__ */ React.createElement(Card, { className: "p-4" }, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "Valeur titres"), /* @__PURE__ */ React.createElement("div", { className: "text-lg font-bold", style: { color: COLORS.text } }, fmt(valeurTitresReel)), /* @__PURE__ */ React.createElement("div", { className: "text-[11px]", style: { color: plusValueTitres >= 0 ? COLORS.cyan : COLORS.pink } }, plusValueTitres >= 0 ? "+" : "", fmt(plusValueTitres))), fondsEuro && /* @__PURE__ */ React.createElement(Card, { className: "p-4" }, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "Fonds euro"), /* @__PURE__ */ React.createElement("div", { className: "text-lg font-bold", style: { color: COLORS.text } }, fmt(fondsEuroValue))), cashLabel && /* @__PURE__ */ React.createElement(Card, { className: "p-4" }, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, cashLabel), /* @__PURE__ */ React.createElement("div", { className: "text-lg font-bold", style: { color: COLORS.text } }, fmt(cashValue))), /* @__PURE__ */ React.createElement(CroissanceBadge, { label: "\xC9volution vs mois pr\xE9c\xE9dent", deltaEuro: croissanceEuro, deltaPct: croissancePct })), /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-3", style: { color: COLORS.sub } }, "R\xE9glages des versements"), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-5" }, settings.versementHistory !== void 0 && /* @__PURE__ */ React.createElement(VersementHistoryEditor, { label: "Versement mensuel programm\xE9", history: settings.versementHistory, onAdd: (from, v) => onVersementAdd("versementHistory", from, v), today }), settings.versementSupportsHistory !== void 0 && /* @__PURE__ */ React.createElement(VersementHistoryEditor, { label: "Versement mensuel \u2014 compte titres", history: settings.versementSupportsHistory, onAdd: (from, v) => onVersementAdd("versementSupportsHistory", from, v), today }), settings.versementFondsEuroHistory !== void 0 && /* @__PURE__ */ React.createElement(VersementHistoryEditor, { label: "Versement mensuel \u2014 fonds euro", history: settings.versementFondsEuroHistory, onAdd: (from, v) => onVersementAdd("versementFondsEuroHistory", from, v), today })), /* @__PURE__ */ React.createElement("div", { className: "flex flex-wrap gap-8 mt-4 pt-4", style: { borderTop: "1px solid rgba(255,255,255,0.06)" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "Jour du mois du virement"), /* @__PURE__ */ React.createElement("div", { className: "text-base font-medium", style: { color: COLORS.text } }, /* @__PURE__ */ React.createElement(EditableNumber, { value: settings.jourVersement, suffix: "", onCommit: (v) => onSettingsField("jourVersement", Math.min(28, Math.max(1, v))) }))), settings.fraisVersementPct !== void 0 && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "Frais par versement"), /* @__PURE__ */ React.createElement("div", { className: "text-base font-medium", style: { color: COLORS.text } }, /* @__PURE__ */ React.createElement(EditableNumber, { value: settings.fraisVersementPct, suffix: " %", decimals: 2, onCommit: (v) => onSettingsField("fraisVersementPct", v) }))), settings.fraisVersementSupportsPct !== void 0 && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "Frais par versement \u2014 compte titres"), /* @__PURE__ */ React.createElement("div", { className: "text-base font-medium", style: { color: COLORS.text } }, /* @__PURE__ */ React.createElement(EditableNumber, { value: settings.fraisVersementSupportsPct, suffix: " %", decimals: 2, onCommit: (v) => onSettingsField("fraisVersementSupportsPct", v) }))), settings.fraisVersementFondsEuroPct !== void 0 && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "Frais par versement \u2014 fonds euro"), /* @__PURE__ */ React.createElement("div", { className: "text-base font-medium", style: { color: COLORS.text } }, /* @__PURE__ */ React.createElement(EditableNumber, { value: settings.fraisVersementFondsEuroPct, suffix: " %", decimals: 2, onCommit: (v) => onSettingsField("fraisVersementFondsEuroPct", v) }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "Frais annuels globaux \u2014 compte titres"), /* @__PURE__ */ React.createElement("div", { className: "text-base font-medium", style: { color: COLORS.text } }, /* @__PURE__ */ React.createElement(EditableNumber, { value: settings.fraisAnnuelsGlobalPct, suffix: " %", decimals: 2, onCommit: (v) => onSettingsField("fraisAnnuelsGlobalPct", v) })))), /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mt-2", style: { color: COLORS.sub } }, "Un changement de versement programm\xE9 aujourd'hui ne s'applique qu'aux mois \xE0 venir \u2014 l'historique pass\xE9 est conserv\xE9. Le jour du virement d\xE9termine si le versement du mois en cours est d\xE9j\xE0 compt\xE9 ou non (la date du jour est prise en compte automatiquement).", fondsEuro ? " Les frais annuels globaux ne s'appliquent qu'au compte titres, pas au fonds euro." : "")), mouvementsFonction, /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-3", style: { color: COLORS.sub } }, "\xC9volution du patrimoine \u2014 ", year), /* @__PURE__ */ React.createElement(ResponsiveContainer, { width: "100%", height: 220 }, /* @__PURE__ */ React.createElement(AreaChart, { data: evolutionChartData }, /* @__PURE__ */ React.createElement("defs", null, /* @__PURE__ */ React.createElement("linearGradient", { id: `grad-total-${title}`, x1: "0", y1: "0", x2: "0", y2: "1" }, /* @__PURE__ */ React.createElement("stop", { offset: "0%", stopColor: color, stopOpacity: 0.55 }), /* @__PURE__ */ React.createElement("stop", { offset: "100%", stopColor: color, stopOpacity: 0.02 }))), /* @__PURE__ */ React.createElement(CartesianGrid, { stroke: "rgba(255,255,255,0.05)", vertical: false }), /* @__PURE__ */ React.createElement(XAxis, { dataKey: "name", tick: { fill: COLORS.sub, fontSize: 11 }, axisLine: false, tickLine: false }), /* @__PURE__ */ React.createElement(YAxis, { tick: { fill: COLORS.sub, fontSize: 11 }, axisLine: false, tickLine: false, tickFormatter: fmtK }), /* @__PURE__ */ React.createElement(Tooltip, { contentStyle: { background: "#1b1e52", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10 }, formatter: (v) => fmt(v) }), /* @__PURE__ */ React.createElement(Area, { type: "monotone", dataKey: "total", name: "Patrimoine", stroke: color, strokeWidth: 2.5, fill: `url(#grad-total-${title})` }))), /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mt-1", style: { color: COLORS.sub } }, "Titres selon le mod\xE8le th\xE9orique (versements + rendement compos\xE9) + fonds euro + esp\xE8ces \u2014 pour un suivi mensuel r\xE9el, mettez \xE0 jour la valeur des parts r\xE9guli\xE8rement.")), /* @__PURE__ */ React.createElement(
+      HoldingsTable,
+      {
+        holdings,
+        accountVersementHistory,
+        fraisVersementPct: fraisVersementTitres,
+        jourVersement: settings.jourVersement,
+        fraisAnnuelsGlobalPct: settings.fraisAnnuelsGlobalPct,
+        year,
+        monthIdx,
+        today,
+        onEdit: onEditHolding,
+        onDelete: onDeleteHolding,
+        onAdd: onAddHolding,
+        label: holdingsLabel
+      }
+    ), fondsEuro && /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-3", style: { color: COLORS.sub } }, "Fonds euro"), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 md:grid-cols-4 gap-4 mb-3" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-[10px] mb-1", style: { color: COLORS.sub } }, "D\xE9but"), /* @__PURE__ */ React.createElement("input", { type: "month", value: fondsEuro.dateDebut || "", onChange: (e) => onFondsEuroField("dateDebut", e.target.value), style: { ...inputStyle, width: "100%" } })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-[10px] mb-1", style: { color: COLORS.sub } }, "Capital initial"), /* @__PURE__ */ React.createElement("div", { className: "text-sm", style: { color: COLORS.text } }, /* @__PURE__ */ React.createElement(EditableNumber, { value: fondsEuro.capitalInitial, onCommit: (v) => onFondsEuroField("capitalInitial", v) }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-[10px] mb-1", style: { color: COLORS.sub } }, "Frais annuels (fonds)"), /* @__PURE__ */ React.createElement("div", { className: "text-sm", style: { color: COLORS.text } }, /* @__PURE__ */ React.createElement(EditableNumber, { value: fondsEuro.fraisAnnuelsPct, suffix: " %", decimals: 2, onCommit: (v) => onFondsEuroField("fraisAnnuelsPct", v) }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-[10px] mb-1", style: { color: COLORS.sub } }, "Rendement ", year), /* @__PURE__ */ React.createElement("div", { className: "text-sm", style: { color: COLORS.text } }, yearlyValueAt(fondsEuro.rendementHistory, year).toFixed(2), " %"))), /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mb-1", style: { color: COLORS.sub } }, "Rendement annuel du fonds euro (variable chaque ann\xE9e)"), /* @__PURE__ */ React.createElement(RendementYearlyEditor, { history: fondsEuro.rendementHistory, onAdd: onFondsEuroRendementAdd, currentYear: year })), /* @__PURE__ */ React.createElement(HoldingsPie, { holdings, fondsEuro: fondsEuro ? { value: fondsEuroValue } : null }));
+  }
+  function RendementYearlyEditor({ history, onAdd, currentYear }) {
+    const [year, setYear] = useState(currentYear);
+    const [value, setValue] = useState("");
+    function submit(e) {
+      e.preventDefault();
+      if (value === "") return;
+      onAdd(Number(year), Number(value));
+      setValue("");
+    }
+    const sorted = [...history || []].sort((a, b) => b.year - a.year);
+    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("form", { onSubmit: submit, className: "flex flex-wrap items-end gap-2 mb-2" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col" }, /* @__PURE__ */ React.createElement("label", { className: "text-[10px]", style: { color: COLORS.sub } }, "Ann\xE9e"), /* @__PURE__ */ React.createElement("input", { type: "number", value: year, onChange: (e) => setYear(e.target.value), style: { ...inputStyle, width: 80 } })), /* @__PURE__ */ React.createElement("div", { className: "flex flex-col" }, /* @__PURE__ */ React.createElement("label", { className: "text-[10px]", style: { color: COLORS.sub } }, "Rendement %"), /* @__PURE__ */ React.createElement("input", { type: "number", step: "0.01", value, onChange: (e) => setValue(e.target.value), style: { ...inputStyle, width: 80 } })), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "rounded-lg px-3 py-1.5 text-xs font-medium", style: { background: COLORS.violet, color: "#fff" } }, "Enregistrer")), sorted.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "text-[11px]", style: { color: COLORS.sub } }, sorted.map((h) => `${h.year} : ${h.value}%`).join(" \xB7 ")));
+  }
+  function PeaOperationsTable({ cashByMonth, versementHistory, jourVersement, year, today, onUpdate }) {
+    return /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-3", style: { color: COLORS.sub } }, "Op\xE9rations"), /* @__PURE__ */ React.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ React.createElement("table", { className: "w-full text-xs", style: { minWidth: 460 } }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", { style: { color: COLORS.sub } }, /* @__PURE__ */ React.createElement("th", { className: "text-left pb-2 font-normal" }, "Mois"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Versement"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Investi"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Solde esp\xE8ces"))), /* @__PURE__ */ React.createElement("tbody", null, MONTHS_FR.map((m, i) => {
+      const versement = landedVersementForMonth(versementHistory, jourVersement, year, i, today);
+      const soldeEspeces = (cashByMonth || {})[m] || 0;
+      const investi = Math.max(0, versement - soldeEspeces);
+      return /* @__PURE__ */ React.createElement("tr", { key: m, style: { borderTop: "1px solid rgba(255,255,255,0.05)" } }, /* @__PURE__ */ React.createElement("td", { className: "py-1.5", style: { color: COLORS.text } }, m[0] + m.slice(1).toLowerCase()), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right", style: { color: COLORS.sub } }, fmt(versement)), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right", style: { color: COLORS.sub }, title: "Calcul\xE9 : versement moins solde esp\xE8ces conserv\xE9" }, fmt(investi)), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right" }, /* @__PURE__ */ React.createElement(EditableNumber, { value: soldeEspeces, onCommit: (v) => onUpdate(m, v) })));
+    })))), /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mt-2", style: { color: COLORS.sub } }, "Par d\xE9faut, tout le versement du mois est investi en compte-titres. Renseignez une somme en \xAB Solde esp\xE8ces \xBB uniquement si vous en laissez de c\xF4t\xE9 ce mois-l\xE0 \u2014 elle sera automatiquement d\xE9duite du montant investi."));
+  }
+  function AvMouvementsTable({ versementSupportsHistory, versementFondsEuroHistory, jourVersement, year, today }) {
+    return /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-3", style: { color: COLORS.sub } }, "Mouvements esp\xE8ces par mois (r\xE9partition programm\xE9e)"), /* @__PURE__ */ React.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ React.createElement("table", { className: "w-full text-xs", style: { minWidth: 420 } }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", { style: { color: COLORS.sub } }, /* @__PURE__ */ React.createElement("th", { className: "text-left pb-2 font-normal" }, "Mois"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Vers compte titres"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Vers fonds euro"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Total vers\xE9"))), /* @__PURE__ */ React.createElement("tbody", null, MONTHS_FR.map((m, i) => {
+      const s = landedVersementForMonth(versementSupportsHistory, jourVersement, year, i, today);
+      const fe = landedVersementForMonth(versementFondsEuroHistory, jourVersement, year, i, today);
+      return /* @__PURE__ */ React.createElement("tr", { key: m, style: { borderTop: "1px solid rgba(255,255,255,0.05)" } }, /* @__PURE__ */ React.createElement("td", { className: "py-1.5", style: { color: COLORS.text } }, m[0] + m.slice(1).toLowerCase()), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right", style: { color: COLORS.sub } }, fmt(s)), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right", style: { color: COLORS.sub } }, fmt(fe)), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right font-medium", style: { color: COLORS.text } }, fmt(s + fe)));
+    })))));
+  }
+  const HORIZONS = [1, 3, 6, 9, 12, 24, 36, 48, 60, 72, 84, 96, 108, 120, 180, 240];
+  const HORIZON_LABELS = ["1 mois", "3 mois", "6 mois", "9 mois", "1 an", "2 ans", "3 ans", "4 ans", "5 ans", "6 ans", "7 ans", "8 ans", "9 ans", "10 ans", "15 ans", "20 ans"];
+  function projectHolding(h, accountVersementHistory, fraisVersementPct, jourVersement, fraisAnnuelsGlobalPct, today) {
+    const present = holdingValueAt(h, accountVersementHistory, fraisVersementPct, jourVersement, fraisAnnuelsGlobalPct, today.year, today.monthIdx, today).capital;
+    const monthlyContribution = averageThisYear(accountVersementHistory, false, today) * ((Number(h.allocationPct) || 0) / 100) * (1 - (Number(fraisVersementPct) || 0) / 100);
+    const monthlyRate = (Number(h.rendementPct || 0) - Number(h.fraisAnnuelsPct || 0) - Number(fraisAnnuelsGlobalPct || 0)) / 12 / 100;
+    return futureValueSeries(present, monthlyContribution, monthlyRate, HORIZONS);
+  }
+  function projectFondsEuro(fondsEuro, versementFondsEuroHistory, fraisVersementPct, jourVersement, fraisAnnuelsGlobalPct, today) {
+    if (!fondsEuro) return HORIZONS.map(() => 0);
+    const schedule = computeInstrumentSchedule({
+      dateDebut: fondsEuro.dateDebut || ymStr(today.year, today.monthIdx),
+      capitalInitial: fondsEuro.capitalInitial,
+      versementHistory: versementFondsEuroHistory,
+      allocationPct: 100,
+      rendementHistory: fondsEuro.rendementHistory,
+      rendementIsYearly: true,
+      fraisAnnuelsPct: fondsEuro.fraisAnnuelsPct,
+      fraisAnnuelsGlobalPct,
+      fraisVersementPct: fraisVersementPct || 0,
+      jourVersement,
+      endYear: today.year,
+      endMonthIdx: today.monthIdx,
+      today
+    });
+    const present = valueAtSelectedMonth(schedule, today.year, today.monthIdx).capital;
+    const monthlyContribution = averageThisYear(versementFondsEuroHistory, false, today);
+    const monthlyRate = (yearlyValueAt(fondsEuro.rendementHistory, today.year) - Number(fondsEuro.fraisAnnuelsPct || 0) - Number(fraisAnnuelsGlobalPct || 0)) / 12 / 100;
+    return futureValueSeries(present, monthlyContribution, monthlyRate, HORIZONS);
+  }
+  function projectLivret(dataByYear, years, settings, today) {
+    const schedule = computeLivretSchedule(dataByYear, years, settings.soldeInitial, settings.tauxAnnuelPct);
+    const present = livretRowAt(schedule, today.year, today.monthIdx).valeur;
+    const monthlyContribution = Number(settings.versementMensuel) > 0 ? Number(settings.versementMensuel) : (() => {
+      const thisYearRows = schedule.filter((r) => r.year === today.year && r.monthIdx <= today.monthIdx && r.versement > 0);
+      return thisYearRows.length > 0 ? thisYearRows.reduce((s, r) => s + r.versement, 0) / thisYearRows.length : 0;
+    })();
+    const monthlyRate = (Number(settings.tauxAnnuelPct) || 0) / 12 / 100;
+    return futureValueSeries(present, monthlyContribution, monthlyRate, HORIZONS);
+  }
+  const BILAN_COLOR = "#E8963C";
+  function BilanTab({
+    bilanYear,
+    setBilanYear,
+    bilanMonthIdx,
+    setBilanMonthIdx,
+    bilanViewMode,
+    setBilanViewMode,
+    years,
+    financeData,
+    compteCourantSchedule,
+    lddsSchedule,
+    livretASchedule,
+    peaHoldings,
+    peaSettings,
+    peaCashByYear,
+    avHoldings,
+    avSettings,
+    avFondsEuro,
+    today,
+    hasLivretAData
+  }) {
+    const bilanAvailableYears = years.filter((y) => y <= today.year).sort((a, b) => a - b);
+    const isCurrentYear = bilanYear === today.year;
+    const availableMonthCount = isCurrentYear ? today.monthIdx : 12;
+    const availableMonths = MONTHS_FR.slice(0, availableMonthCount);
+    function snapshotAt(y, m) {
+      const compteCourant = compteCourantRowAt(compteCourantSchedule, y, m).solde;
+      const ldds = livretRowAt(lddsSchedule, y, m).valeur;
+      const livretA = livretRowAt(livretASchedule, y, m).valeur;
+      const peaCashAtMonth = (peaCashByYear[y] || {})[MONTHS_FR[m]];
+      const totals = computeAccountTotals(y, m, peaHoldings, peaSettings, peaCashAtMonth, avHoldings, avSettings, avFondsEuro, today);
+      const total = compteCourant + ldds + livretA + totals.pea + totals.av;
+      return { compteCourant, ldds, livretA, pea: totals.pea, av: totals.av, total };
+    }
+    if (availableMonthCount === 0) {
+      return /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 gap-4" }, /* @__PURE__ */ React.createElement(Card, { className: "p-6 text-center text-sm", style: { color: COLORS.sub } }, "Aucun mois pass\xE9 disponible pour ", bilanYear, " pour le moment \u2014 revenez le mois prochain."));
+    }
+    const lastIdx = availableMonthCount - 1;
+    const targetMonthIdx = bilanViewMode === "annee" ? lastIdx : Math.min(bilanMonthIdx, lastIdx);
+    let income = 0, expenses = 0;
+    const monthsToSum = bilanViewMode === "annee" ? availableMonths.map((_, i) => i) : [targetMonthIdx];
+    monthsToSum.forEach((m) => {
+      const yearFin = financeData[bilanYear] || emptyFinanceYear();
+      const t = monthTotals(yearFin[MONTHS_FR[m]] || emptyMonth());
+      income += t.income;
+      expenses += t.expenses;
+    });
+    const current = snapshotAt(bilanYear, targetMonthIdx);
+    const before = bilanViewMode === "annee" ? snapshotAt(bilanYear - 1, 11) : snapshotAt(prevMonth(bilanYear, targetMonthIdx).year, prevMonth(bilanYear, targetMonthIdx).monthIdx);
+    const periodLabel = bilanViewMode === "annee" ? `${bilanYear}` : `${MONTHS_FR[targetMonthIdx][0] + MONTHS_FR[targetMonthIdx].slice(1).toLowerCase()} ${bilanYear}`;
+    const patrimoineDeltaEuro = current.total - before.total;
+    const patrimoineDeltaPct = before.total !== 0 ? patrimoineDeltaEuro / Math.abs(before.total) * 100 : 0;
+    const evolutionRows = [
+      { label: "LDDS", cur: current.ldds, prev: before.ldds },
+      ...hasLivretAData ? [{ label: "Livret A", cur: current.livretA, prev: before.livretA }] : [],
+      { label: "PEA", cur: current.pea, prev: before.pea },
+      { label: "Assurance Vie", cur: current.av, prev: before.av }
+    ];
+    return /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 gap-4" }, /* @__PURE__ */ React.createElement(Card, { className: "p-4" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col md:flex-row md:items-center gap-3" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1.5 overflow-x-auto" }, bilanAvailableYears.map((y) => /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        key: y,
+        onClick: () => {
+          setBilanYear(y);
+          setBilanMonthIdx(0);
+        },
+        className: "px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap",
+        style: { background: y === bilanYear ? BILAN_COLOR : "rgba(255,255,255,0.05)", color: y === bilanYear ? "#2a1a05" : COLORS.sub }
+      },
+      y
+    ))), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1.5 overflow-x-auto flex-1" }, availableMonths.map((m, i) => /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        key: m,
+        onClick: () => {
+          setBilanMonthIdx(i);
+          setBilanViewMode("mois");
+        },
+        className: "px-2.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap",
+        style: { background: bilanViewMode === "mois" && i === targetMonthIdx ? BILAN_COLOR : "rgba(255,255,255,0.04)", color: bilanViewMode === "mois" && i === targetMonthIdx ? "#2a1a05" : COLORS.sub }
+      },
+      MONTHS_FR_SHORT[i]
+    ))), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1.5 shrink-0" }, /* @__PURE__ */ React.createElement("button", { onClick: () => setBilanViewMode("mois"), className: "px-3 py-1.5 rounded-full text-xs font-medium", style: { background: bilanViewMode === "mois" ? "rgba(232,150,60,0.2)" : "rgba(255,255,255,0.04)", color: bilanViewMode === "mois" ? BILAN_COLOR : COLORS.sub, border: `1px solid ${bilanViewMode === "mois" ? BILAN_COLOR : "transparent"}` } }, "Mois"), /* @__PURE__ */ React.createElement("button", { onClick: () => setBilanViewMode("annee"), className: "px-3 py-1.5 rounded-full text-xs font-medium", style: { background: bilanViewMode === "annee" ? "rgba(232,150,60,0.2)" : "rgba(255,255,255,0.04)", color: bilanViewMode === "annee" ? BILAN_COLOR : COLORS.sub, border: `1px solid ${bilanViewMode === "annee" ? BILAN_COLOR : "transparent"}` } }, "Ann\xE9e"))), /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mt-2", style: { color: COLORS.sub } }, "Bilan \u2014 ", periodLabel, " (ann\xE9es et mois pass\xE9s uniquement)")), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4" }, /* @__PURE__ */ React.createElement(Card, { className: "p-4 md:col-span-1" }, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "Revenus totaux"), /* @__PURE__ */ React.createElement("div", { className: "text-xl font-bold", style: { color: COLORS.text } }, fmt(income))), /* @__PURE__ */ React.createElement(Card, { className: "p-4 md:col-span-1" }, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "D\xE9penses totales"), /* @__PURE__ */ React.createElement("div", { className: "text-xl font-bold", style: { color: COLORS.text } }, fmt(expenses))), /* @__PURE__ */ React.createElement("div", { className: "md:col-span-1" }, /* @__PURE__ */ React.createElement(RatioDonut, { income, expenses, title: "Ratio" }))), evolutionRows.map((r) => {
+      const delta = r.cur - r.prev;
+      const pct = r.prev !== 0 ? delta / Math.abs(r.prev) * 100 : 0;
+      return /* @__PURE__ */ React.createElement("div", { key: r.label, className: "grid grid-cols-1 md:grid-cols-3 gap-4" }, /* @__PURE__ */ React.createElement(Card, { className: "p-4 md:col-span-2 flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-1", style: { color: COLORS.sub } }, "\xC9volution \u2014 ", r.label), /* @__PURE__ */ React.createElement("div", { className: "text-lg font-bold", style: { color: COLORS.text } }, fmt(r.cur)))), /* @__PURE__ */ React.createElement(CroissanceBadge, { label: `${r.label} \u2014 variation`, deltaEuro: delta, deltaPct: pct }));
+    }), /* @__PURE__ */ React.createElement(CroissanceBadge, { label: "\xC9volution du patrimoine global", deltaEuro: patrimoineDeltaEuro, deltaPct: patrimoineDeltaPct, cardClass: "p-5" }));
+  }
+  function PrevisionsTab({ peaHoldings, peaSettings, avHoldings, avSettings, avFondsEuro, lddsData, lddsSettings, livretAData, livretASettings, years, today }) {
+    const peaSeries = peaHoldings.map((h) => projectHolding(h, peaSettings.versementHistory, peaSettings.fraisVersementPct, peaSettings.jourVersement, peaSettings.fraisAnnuelsGlobalPct, today));
+    const peaTotal = HORIZONS.map((_, i) => peaSeries.reduce((s, series) => s + series[i], 0));
+    const avHoldingsSeries = avHoldings.map((h) => projectHolding(h, avSettings.versementSupportsHistory, avSettings.fraisVersementSupportsPct !== void 0 ? avSettings.fraisVersementSupportsPct : avSettings.fraisVersementPct, avSettings.jourVersement, avSettings.fraisAnnuelsGlobalPct, today));
+    const avFeSeries = projectFondsEuro(avFondsEuro, avSettings.versementFondsEuroHistory, avSettings.fraisVersementFondsEuroPct, avSettings.jourVersement, 0, today);
+    const avTotal = HORIZONS.map((_, i) => avHoldingsSeries.reduce((s, series) => s + series[i], 0) + avFeSeries[i]);
+    const lddsTotal = projectLivret(lddsData, years, lddsSettings, today);
+    const livretATotal = projectLivret(livretAData, years, livretASettings, today);
+    const globalTotal = HORIZONS.map((_, i) => peaTotal[i] + avTotal[i] + lddsTotal[i] + livretATotal[i]);
+    const chartData = HORIZON_LABELS.map((label, i) => ({ name: label, PEA: Math.round(peaTotal[i]), "Assurance Vie": Math.round(avTotal[i]), LDDS: Math.round(lddsTotal[i]), "Livret A": Math.round(livretATotal[i]), Total: Math.round(globalTotal[i]) }));
+    return /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 gap-4" }, /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-1", style: { color: COLORS.sub } }, "Projection du patrimoine global"), /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mb-3", style: { color: COLORS.sub } }, "En supposant que versements, rendements et frais restent \xE9gaux \xE0 leur moyenne sur l'ann\xE9e ", today.year, " jusqu'ici."), /* @__PURE__ */ React.createElement(ResponsiveContainer, { width: "100%", height: 260 }, /* @__PURE__ */ React.createElement(AreaChart, { data: chartData }, /* @__PURE__ */ React.createElement("defs", null, /* @__PURE__ */ React.createElement("linearGradient", { id: "grad-prev", x1: "0", y1: "0", x2: "0", y2: "1" }, /* @__PURE__ */ React.createElement("stop", { offset: "0%", stopColor: COLORS.blueLight, stopOpacity: 0.5 }), /* @__PURE__ */ React.createElement("stop", { offset: "100%", stopColor: COLORS.blueLight, stopOpacity: 0.02 }))), /* @__PURE__ */ React.createElement(CartesianGrid, { stroke: "rgba(255,255,255,0.05)", vertical: false }), /* @__PURE__ */ React.createElement(XAxis, { dataKey: "name", tick: { fill: COLORS.sub, fontSize: 10 }, axisLine: false, tickLine: false }), /* @__PURE__ */ React.createElement(YAxis, { tick: { fill: COLORS.sub, fontSize: 11 }, axisLine: false, tickLine: false, tickFormatter: fmtK }), /* @__PURE__ */ React.createElement(Tooltip, { contentStyle: { background: "#1b1e52", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10 }, formatter: (v) => fmt(v) }), /* @__PURE__ */ React.createElement(Area, { type: "monotone", dataKey: "Total", stroke: COLORS.blueLight, strokeWidth: 2.5, fill: "url(#grad-prev)" })))), /* @__PURE__ */ React.createElement(Card, { className: "p-5" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm mb-3", style: { color: COLORS.sub } }, "D\xE9tail par horizon"), /* @__PURE__ */ React.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ React.createElement("table", { className: "w-full text-xs", style: { minWidth: 560 } }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", { style: { color: COLORS.sub } }, /* @__PURE__ */ React.createElement("th", { className: "text-left pb-2 font-normal" }, "Horizon"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "PEA"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Assurance Vie"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "LDDS"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Livret A"), /* @__PURE__ */ React.createElement("th", { className: "text-right pb-2 font-normal" }, "Total"))), /* @__PURE__ */ React.createElement("tbody", null, chartData.map((row) => /* @__PURE__ */ React.createElement("tr", { key: row.name, style: { borderTop: "1px solid rgba(255,255,255,0.05)" } }, /* @__PURE__ */ React.createElement("td", { className: "py-1.5", style: { color: COLORS.text } }, row.name), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right", style: { color: COLORS.sub } }, fmt(row.PEA)), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right", style: { color: COLORS.sub } }, fmt(row["Assurance Vie"])), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right", style: { color: COLORS.sub } }, fmt(row.LDDS)), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right", style: { color: COLORS.sub } }, fmt(row["Livret A"])), /* @__PURE__ */ React.createElement("td", { className: "py-1.5 text-right font-semibold", style: { color: COLORS.text } }, fmt(row.Total))))))), /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mt-2", style: { color: COLORS.sub } }, "Projection indicative, pas une garantie de performance \u2014 les rendements r\xE9els varient.")));
+  }
+  const EVERGREEN_KEYS = ["pea-settings", "av-settings", "pea-holdings", "av-holdings", "av-fondseuro", "objectifs", "budget-categories", "ldds-settings", "livreta-settings"];
+  async function collectAllStorageKeys() {
+    let years = [2026];
+    try {
+      const res = await window.storage.get("years-list");
+      years = JSON.parse(res.value);
+    } catch (e) {
+    }
+    const keys = ["years-list", ...EVERGREEN_KEYS];
+    years.forEach((y) => keys.push(`finance-${y}`, `ldds-${y}`, `livreta-${y}`, `pea-cash-${y}`));
+    return keys;
+  }
+  async function exportAllData() {
+    const keys = await collectAllStorageKeys();
+    const data = {};
+    for (const k of keys) {
+      try {
+        const res = await window.storage.get(k);
+        data[k] = res.value;
+      } catch (e) {
+      }
+    }
+    return JSON.stringify({ app: "finances-personnelles", exportedAt: (/* @__PURE__ */ new Date()).toISOString(), data }, null, 2);
+  }
+  async function importAllData(jsonText) {
+    const parsed = JSON.parse(jsonText);
+    const data = parsed && parsed.data ? parsed.data : parsed;
+    if (!data || typeof data !== "object") throw new Error("Format invalide");
+    for (const [k, v] of Object.entries(data)) {
+      await window.storage.set(k, v);
+    }
+  }
+  function DataBackupControls() {
+    const [open, setOpen] = useState(false);
+    const [importText, setImportText] = useState("");
+    const [status, setStatus] = useState("");
+    const [confirming, setConfirming] = useState(false);
+    function flash(msg) {
+      setStatus(msg);
+      setTimeout(() => setStatus(""), 4e3);
+    }
+    async function handleDownload() {
+      try {
+        const json = await exportAllData();
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `finances-personnelles-${(/* @__PURE__ */ new Date()).toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        flash("Fichier t\xE9l\xE9charg\xE9.");
+      } catch (e) {
+        flash("\xC9chec du t\xE9l\xE9chargement.");
+      }
+    }
+    async function handleCopy() {
+      try {
+        const json = await exportAllData();
+        await navigator.clipboard.writeText(json);
+        flash("Copi\xE9 dans le presse-papier.");
+      } catch (e) {
+        flash("Copie impossible ici \u2014 utilisez plut\xF4t T\xE9l\xE9charger.");
+      }
+    }
+    function handleFile(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => setImportText(String(ev.target.result || ""));
+      reader.readAsText(file);
+    }
+    async function handleImport() {
+      if (!importText.trim()) {
+        flash("Collez ou chargez d'abord des donn\xE9es.");
+        return;
+      }
+      if (!confirming) {
+        setConfirming(true);
+        return;
+      }
+      try {
+        await importAllData(importText);
+        flash("Import r\xE9ussi \u2014 rechargement...");
+        setTimeout(() => window.location.reload(), 800);
+      } catch (e) {
+        flash("Fichier invalide \u2014 v\xE9rifiez le contenu.");
+        setConfirming(false);
+      }
+    }
+    return /* @__PURE__ */ React.createElement("div", { className: "relative" }, /* @__PURE__ */ React.createElement("button", { onClick: () => setOpen((o) => !o), className: "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs", style: { background: "rgba(255,255,255,0.05)", color: COLORS.sub } }, /* @__PURE__ */ React.createElement(Download, { size: 13 }), " Sauvegarde"), open && /* @__PURE__ */ React.createElement("div", { className: "absolute right-0 mt-2 rounded-2xl p-4 z-20", style: { background: "#171a4d", border: `1px solid ${COLORS.cardBorder}`, boxShadow: "0 12px 40px rgba(0,0,0,0.5)", width: 300 } }, /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-2", style: { color: COLORS.sub } }, "Exporter toutes mes donn\xE9es"), /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-3" }, /* @__PURE__ */ React.createElement("button", { onClick: handleDownload, className: "flex-1 flex items-center justify-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium", style: { background: COLORS.violet, color: "#fff" } }, /* @__PURE__ */ React.createElement(Download, { size: 13 }), " T\xE9l\xE9charger"), /* @__PURE__ */ React.createElement("button", { onClick: handleCopy, className: "flex-1 flex items-center justify-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium", style: { background: "rgba(255,255,255,0.08)", color: COLORS.text } }, /* @__PURE__ */ React.createElement(Copy, { size: 13 }), " Copier")), /* @__PURE__ */ React.createElement("div", { className: "text-xs mb-2 pt-2", style: { color: COLORS.sub, borderTop: "1px solid rgba(255,255,255,0.06)" } }, "Restaurer depuis une sauvegarde"), /* @__PURE__ */ React.createElement("input", { type: "file", accept: ".json,application/json", onChange: handleFile, className: "text-[11px] mb-2", style: { color: COLORS.sub, width: "100%" } }), /* @__PURE__ */ React.createElement("textarea", { value: importText, onChange: (e) => {
+      setImportText(e.target.value);
+      setConfirming(false);
+    }, placeholder: "...ou collez ici le JSON export\xE9", rows: 3, style: { ...inputStyle, width: "100%", resize: "vertical" } }), /* @__PURE__ */ React.createElement("button", { onClick: handleImport, className: "w-full flex items-center justify-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium mt-2", style: { background: confirming ? COLORS.red : "rgba(255,255,255,0.08)", color: confirming ? "#fff" : COLORS.text } }, /* @__PURE__ */ React.createElement(Upload, { size: 13 }), " ", confirming ? "Confirmer \u2014 remplace tout, cliquez \xE0 nouveau" : "Importer"), status && /* @__PURE__ */ React.createElement("div", { className: "text-[11px] mt-2", style: { color: COLORS.sub } }, status)));
+  }
+  const NAMESPACE = "finances-personnelles";
+  function storageKey(key, shared) {
+    return `${NAMESPACE}:${shared ? "shared" : "personal"}:${key}`;
+  }
+  function safeLocalStorage() {
+    try {
+      const testKey = `${NAMESPACE}:__test__`;
+      window.localStorage.setItem(testKey, "1");
+      window.localStorage.removeItem(testKey);
+      return window.localStorage;
+    } catch (e) {
+      console.warn("localStorage indisponible \u2014 stockage temporaire uniquement pour cette session.", e);
+      if (!window.__memoryStorageFallback) window.__memoryStorageFallback = /* @__PURE__ */ new Map();
+      return {
+        getItem: (k) => window.__memoryStorageFallback.has(k) ? window.__memoryStorageFallback.get(k) : null,
+        setItem: (k, v) => window.__memoryStorageFallback.set(k, v),
+        removeItem: (k) => window.__memoryStorageFallback.delete(k),
+        get length() {
+          return window.__memoryStorageFallback.size;
+        },
+        key: (i) => Array.from(window.__memoryStorageFallback.keys())[i]
+      };
+    }
+  }
+  if (typeof window !== "undefined" && !window.storage) {
+    const backend = safeLocalStorage();
+    window.storage = {
+      get(key, shared = false) {
+        return new Promise((resolve, reject) => {
+          try {
+            const raw = backend.getItem(storageKey(key, shared));
+            if (raw === null || raw === void 0) {
+              reject(new Error(`Cl\xE9 introuvable : ${key}`));
+              return;
+            }
+            resolve({ key, value: raw, shared });
+          } catch (e) {
+            reject(e);
+          }
+        });
+      },
+      set(key, value, shared = false) {
+        return new Promise((resolve, reject) => {
+          try {
+            backend.setItem(storageKey(key, shared), value);
+            resolve({ key, value, shared });
+          } catch (e) {
+            reject(e);
+          }
+        });
+      },
+      delete(key, shared = false) {
+        return new Promise((resolve, reject) => {
+          try {
+            backend.removeItem(storageKey(key, shared));
+            resolve({ key, deleted: true, shared });
+          } catch (e) {
+            reject(e);
+          }
+        });
+      },
+      list(prefix = "", shared = false) {
+        return new Promise((resolve, reject) => {
+          try {
+            const fullPrefix = storageKey(prefix, shared);
+            const keys = [];
+            for (let i = 0; i < backend.length; i++) {
+              const k = backend.key(i);
+              if (k && k.indexOf(fullPrefix) === 0) {
+                keys.push(k.slice(storageKey("", shared).length));
+              }
+            }
+            resolve({ keys, prefix, shared });
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+    };
+  }
+  function App() {
+    const [today] = useState(() => todayInfo());
+    const [bilanYear, setBilanYear] = useState(() => todayInfo().year);
+    const [bilanMonthIdx, setBilanMonthIdx] = useState(() => Math.max(0, todayInfo().monthIdx - 1));
+    const [bilanViewMode, setBilanViewMode] = useState("mois");
+    const [years, setYears] = useState([2026]);
+    const [selectedYear, setSelectedYear] = useState(2026);
+    const [selectedMonthIdx, setSelectedMonthIdx] = useState(0);
+    const [nav, setNav] = useState("dashboard");
+    const [loading, setLoading] = useState(true);
+    const [financeData, setFinanceData] = useState({});
+    const [lddsData, setLddsData] = useState({});
+    const [lddsSettings, setLddsSettings] = useState(emptyLddsSettings());
+    const [livretAData, setLivretAData] = useState({});
+    const [livretASettings, setLivretASettings] = useState(emptyLddsSettings());
+    const [peaSettings, setPeaSettings] = useState(emptyPeaSettings());
+    const [avSettings, setAvSettings] = useState(emptyAvSettings());
+    const [peaHoldings, setPeaHoldings] = useState([]);
+    const [avHoldings, setAvHoldings] = useState([]);
+    const [avFondsEuro, setAvFondsEuro] = useState(emptyFondsEuro());
+    const [objectifs, setObjectifs] = useState([]);
+    const [budgetCategories, setBudgetCategories] = useState(DEFAULT_BUDGET_CATEGORIES);
+    const [peaCashByYear, setPeaCashByYear] = useState({});
+    const loadOne = useCallback(async (key, emptyFn) => {
+      try {
+        const res = await window.storage.get(key);
+        return JSON.parse(res.value);
+      } catch (e) {
+        const val = emptyFn();
+        try {
+          await window.storage.set(key, JSON.stringify(val));
+        } catch (e2) {
+        }
+        return val;
+      }
+    }, []);
+    const ensureYear = useCallback(async (year) => {
+      const [f, l, la, pc] = await Promise.all([
+        loadOne(`finance-${year}`, emptyFinanceYear),
+        loadOne(`ldds-${year}`, emptyAccountYear),
+        loadOne(`livreta-${year}`, emptyAccountYear),
+        loadOne(`pea-cash-${year}`, () => ({}))
+      ]);
+      setFinanceData((prev) => ({ ...prev, [year]: f }));
+      setLddsData((prev) => ({ ...prev, [year]: l }));
+      setLivretAData((prev) => ({ ...prev, [year]: la }));
+      setPeaCashByYear((prev) => ({ ...prev, [year]: pc }));
+    }, [loadOne]);
+    const loadEvergreen = useCallback(async () => {
+      const [ps, as_, ph, ah, fe, obj, cats, ls, las] = await Promise.all([
+        loadOne("pea-settings", emptyPeaSettings),
+        loadOne("av-settings", emptyAvSettings),
+        loadOne("pea-holdings", () => []),
+        loadOne("av-holdings", () => []),
+        loadOne("av-fondseuro", emptyFondsEuro),
+        loadOne("objectifs", () => []),
+        loadOne("budget-categories", () => DEFAULT_BUDGET_CATEGORIES),
+        loadOne("ldds-settings", emptyLddsSettings),
+        loadOne("livreta-settings", emptyLddsSettings)
+      ]);
+      setPeaSettings(ps);
+      setAvSettings(as_);
+      setPeaHoldings(ph);
+      setAvHoldings(ah);
+      setAvFondsEuro(fe);
+      setObjectifs(obj);
+      setBudgetCategories(cats);
+      setLddsSettings(ls);
+      setLivretASettings(las);
+    }, [loadOne]);
+    useEffect(() => {
+      (async () => {
+        let yrs;
+        try {
+          const res = await window.storage.get("years-list");
+          yrs = JSON.parse(res.value);
+        } catch (e) {
+          yrs = [2026];
+          try {
+            await window.storage.set("years-list", JSON.stringify(yrs));
+          } catch (e2) {
+          }
+        }
+        setYears(yrs);
+        const latest = yrs[yrs.length - 1];
+        setSelectedYear(latest);
+        await Promise.all([...yrs.map((y) => ensureYear(y)), loadEvergreen()]);
+        setLoading(false);
+      })();
+    }, []);
+    async function selectYear(y) {
+      setSelectedYear(y);
+      setSelectedMonthIdx(0);
+      if (!financeData[y]) await ensureYear(y);
+    }
+    async function addYear() {
+      const next = Math.max(...years) + 1;
+      const newYears = [...years, next];
+      setYears(newYears);
+      try {
+        await window.storage.set("years-list", JSON.stringify(newYears));
+      } catch (e) {
+      }
+      await ensureYear(next);
+      setSelectedYear(next);
+      setSelectedMonthIdx(0);
+    }
+    const monthKey = MONTHS_FR[selectedMonthIdx];
+    const yearFinance = financeData[selectedYear] || emptyFinanceYear();
+    const currentMonth = yearFinance[monthKey] || emptyMonth();
+    const peaCashYear = peaCashByYear[selectedYear] || {};
+    function addTransaction(kind, tx) {
+      const key = kind === "expense" ? "expenseTx" : "incomeTx";
+      setFinanceData((prev) => {
+        const yearObj = prev[selectedYear] || emptyFinanceYear();
+        const m = yearObj[monthKey] || emptyMonth();
+        const updatedYear = { ...yearObj, [monthKey]: { ...m, [key]: [...m[key] || [], tx] } };
+        window.storage.set(`finance-${selectedYear}`, JSON.stringify(updatedYear)).catch(() => {
+        });
+        return { ...prev, [selectedYear]: updatedYear };
+      });
+    }
+    function removeTransaction(kind, id) {
+      const key = kind === "expense" ? "expenseTx" : "incomeTx";
+      setFinanceData((prev) => {
+        const yearObj = prev[selectedYear] || emptyFinanceYear();
+        const m = yearObj[monthKey] || emptyMonth();
+        const updatedYear = { ...yearObj, [monthKey]: { ...m, [key]: (m[key] || []).filter((t) => t.id !== id) } };
+        window.storage.set(`finance-${selectedYear}`, JSON.stringify(updatedYear)).catch(() => {
+        });
+        return { ...prev, [selectedYear]: updatedYear };
+      });
+    }
+    function persistObjectifs(updated) {
+      setObjectifs(updated);
+      window.storage.set("objectifs", JSON.stringify(updated)).catch(() => {
+      });
+    }
+    function addObjectif() {
+      persistObjectifs([...objectifs, newObjectif()]);
+    }
+    function updateObjectif(id, field, value) {
+      persistObjectifs(objectifs.map((o) => o.id === id ? { ...o, [field]: value } : o));
+    }
+    function deleteObjectif(id) {
+      persistObjectifs(objectifs.filter((o) => o.id !== id));
+    }
+    function persistCategories(updated) {
+      setBudgetCategories(updated);
+      window.storage.set("budget-categories", JSON.stringify(updated)).catch(() => {
+      });
+    }
+    function addCategory(nom) {
+      persistCategories([...budgetCategories, { id: "cat-" + Date.now() + Math.random(), nom, budgetMensuel: 0 }]);
+    }
+    function renameCategory(id, nom) {
+      persistCategories(budgetCategories.map((c) => c.id === id ? { ...c, nom } : c));
+    }
+    function setCategoryBudget(id, v) {
+      persistCategories(budgetCategories.map((c) => c.id === id ? { ...c, budgetMensuel: v } : c));
+    }
+    function deleteCategory(id) {
+      persistCategories(budgetCategories.filter((c) => c.id !== id));
+    }
+    function updateLddsVersement(m, value) {
+      setLddsData((prev) => {
+        const yearObj = prev[selectedYear] || emptyAccountYear();
+        const updatedYear = { ...yearObj, [m]: { ...yearObj[m], versement: value } };
+        window.storage.set(`ldds-${selectedYear}`, JSON.stringify(updatedYear)).catch(() => {
+        });
+        return { ...prev, [selectedYear]: updatedYear };
+      });
+    }
+    function updateLddsSettings(field, value) {
+      setLddsSettings((prev) => {
+        const updated = { ...prev, [field]: value };
+        window.storage.set("ldds-settings", JSON.stringify(updated)).catch(() => {
+        });
+        return updated;
+      });
+    }
+    function updateLivretAVersement(m, value) {
+      setLivretAData((prev) => {
+        const yearObj = prev[selectedYear] || emptyAccountYear();
+        const updatedYear = { ...yearObj, [m]: { ...yearObj[m], versement: value } };
+        window.storage.set(`livreta-${selectedYear}`, JSON.stringify(updatedYear)).catch(() => {
+        });
+        return { ...prev, [selectedYear]: updatedYear };
+      });
+    }
+    function updateLivretASettings(field, value) {
+      setLivretASettings((prev) => {
+        const updated = { ...prev, [field]: value };
+        window.storage.set("livreta-settings", JSON.stringify(updated)).catch(() => {
+        });
+        return updated;
+      });
+    }
+    function updatePeaSettingsField(field, value) {
+      setPeaSettings((prev) => {
+        const u = { ...prev, [field]: value };
+        window.storage.set("pea-settings", JSON.stringify(u)).catch(() => {
+        });
+        return u;
+      });
+    }
+    function addPeaVersement(field, from, value) {
+      setPeaSettings((prev) => {
+        const u = { ...prev, [field]: upsertVersioned(prev[field], from, value) };
+        window.storage.set("pea-settings", JSON.stringify(u)).catch(() => {
+        });
+        return u;
+      });
+    }
+    function updatePeaHolding(id, field, value) {
+      setPeaHoldings((prev) => {
+        const u = prev.map((h) => h.id === id ? { ...h, [field]: value } : h);
+        window.storage.set("pea-holdings", JSON.stringify(u)).catch(() => {
+        });
+        return u;
+      });
+    }
+    function deletePeaHolding(id) {
+      setPeaHoldings((prev) => {
+        const u = prev.filter((h) => h.id !== id);
+        window.storage.set("pea-holdings", JSON.stringify(u)).catch(() => {
+        });
+        return u;
+      });
+    }
+    function addPeaHolding() {
+      setPeaHoldings((prev) => {
+        const u = [...prev, newHolding()];
+        window.storage.set("pea-holdings", JSON.stringify(u)).catch(() => {
+        });
+        return u;
+      });
+    }
+    function updatePeaCash(m, value) {
+      setPeaCashByYear((prev) => {
+        const yearObj = { ...prev[selectedYear] || {}, [m]: value };
+        window.storage.set(`pea-cash-${selectedYear}`, JSON.stringify(yearObj)).catch(() => {
+        });
+        return { ...prev, [selectedYear]: yearObj };
+      });
+    }
+    function updateAvSettingsField(field, value) {
+      setAvSettings((prev) => {
+        const u = { ...prev, [field]: value };
+        window.storage.set("av-settings", JSON.stringify(u)).catch(() => {
+        });
+        return u;
+      });
+    }
+    function addAvVersement(field, from, value) {
+      setAvSettings((prev) => {
+        const u = { ...prev, [field]: upsertVersioned(prev[field], from, value) };
+        window.storage.set("av-settings", JSON.stringify(u)).catch(() => {
+        });
+        return u;
+      });
+    }
+    function updateAvHolding(id, field, value) {
+      setAvHoldings((prev) => {
+        const u = prev.map((h) => h.id === id ? { ...h, [field]: value } : h);
+        window.storage.set("av-holdings", JSON.stringify(u)).catch(() => {
+        });
+        return u;
+      });
+    }
+    function deleteAvHolding(id) {
+      setAvHoldings((prev) => {
+        const u = prev.filter((h) => h.id !== id);
+        window.storage.set("av-holdings", JSON.stringify(u)).catch(() => {
+        });
+        return u;
+      });
+    }
+    function addAvHolding() {
+      setAvHoldings((prev) => {
+        const u = [...prev, newHolding()];
+        window.storage.set("av-holdings", JSON.stringify(u)).catch(() => {
+        });
+        return u;
+      });
+    }
+    function updateFondsEuroField(field, value) {
+      setAvFondsEuro((prev) => {
+        const u = { ...prev, [field]: value };
+        window.storage.set("av-fondseuro", JSON.stringify(u)).catch(() => {
+        });
+        return u;
+      });
+    }
+    function addFondsEuroRendement(year, value) {
+      setAvFondsEuro((prev) => {
+        const u = { ...prev, rendementHistory: upsertYearly(prev.rendementHistory, year, value) };
+        window.storage.set("av-fondseuro", JSON.stringify(u)).catch(() => {
+        });
+        return u;
+      });
+    }
+    const nowTotals = computeAccountTotals(selectedYear, selectedMonthIdx, peaHoldings, peaSettings, peaCashYear[monthKey], avHoldings, avSettings, avFondsEuro, today);
+    const peaTotalNow = nowTotals.pea;
+    const avTotalNow = nowTotals.av;
+    const lddsSchedule = computeLivretSchedule(lddsData, years, lddsSettings.soldeInitial, lddsSettings.tauxAnnuelPct);
+    const lddsTotalNow = livretRowAt(lddsSchedule, selectedYear, selectedMonthIdx).valeur;
+    const livretASchedule = computeLivretSchedule(livretAData, years, livretASettings.soldeInitial, livretASettings.tauxAnnuelPct);
+    const livretATotalNow = livretRowAt(livretASchedule, selectedYear, selectedMonthIdx).valeur;
+    const hasLivretAData = Number(livretASettings.soldeInitial || 0) > 0 || Object.values(livretAData).some((yearObj) => Object.values(yearObj || {}).some((m) => Number((m || {}).versement) > 0));
+    const investTotalNow = peaTotalNow + avTotalNow + lddsTotalNow + livretATotalNow;
+    const objSaved = objectifs.reduce((s, o) => s + Number(o.montant || 0), 0);
+    const compteCourantSchedule = computeCompteCourantSchedule(years, financeData, peaSettings, avSettings, lddsData, livretAData, today);
+    const soldeCompteCourantNow = compteCourantRowAt(compteCourantSchedule, selectedYear, selectedMonthIdx).solde;
+    const surplusNow = compteCourantRowAt(compteCourantSchedule, selectedYear, selectedMonthIdx).surplus;
+    const patrimoineGrowth = computePatrimoineGrowth(selectedYear, selectedMonthIdx, financeData, peaHoldings, peaSettings, avHoldings, avSettings, avFondsEuro, lddsSchedule, livretASchedule, today);
+    const patrimoineTotalNow = soldeCompteCourantNow + investTotalNow;
+    const patrimoinePrevTotal = patrimoineTotalNow - patrimoineGrowth.euro;
+    const patrimoineGrowthPct = patrimoinePrevTotal !== 0 ? patrimoineGrowth.euro / Math.abs(patrimoinePrevTotal) * 100 : 0;
+    const totalBudget = budgetCategories.reduce((s, c) => s + Number(c.budgetMensuel || 0), 0);
+    const totalSpent = monthTotals(currentMonth).expenses;
+    const budgetPct = totalBudget > 0 ? totalSpent / totalBudget * 100 : 0;
+    const budgetCategoryNames = budgetCategories.map((c) => c.nom);
+    const gaugeEl = /* @__PURE__ */ React.createElement(Card, { className: "p-4" }, /* @__PURE__ */ React.createElement(GaugeBar, { pct: budgetPct, label: "D\xE9penses du mois vs budget total", sub: `${fmt(totalSpent)} / ${fmt(totalBudget)}` }));
+    if (loading) return /* @__PURE__ */ React.createElement("div", { className: "min-h-screen w-full flex items-center justify-center", style: { background: COLORS.bg1, color: COLORS.text } }, "Chargement de vos donn\xE9es\u2026");
+    return /* @__PURE__ */ React.createElement("div", { className: "min-h-screen w-full p-4 md:p-6", style: { background: `radial-gradient(circle at 20% 0%, ${COLORS.bg2}, ${COLORS.bg1} 60%)`, fontFamily: "'Inter', system-ui, sans-serif" } }, /* @__PURE__ */ React.createElement("div", { className: "max-w-7xl mx-auto" }, /* @__PURE__ */ React.createElement(Card, { className: "p-4 md:p-6" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col gap-3 mb-6" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col md:flex-row md:items-center gap-4" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 shrink-0" }, /* @__PURE__ */ React.createElement(Wallet, { size: 22, color: COLORS.blueLight }), /* @__PURE__ */ React.createElement("div", { className: "leading-tight" }, /* @__PURE__ */ React.createElement("div", { className: "text-xs tracking-wide", style: { color: COLORS.sub } }, "FINANCES"), /* @__PURE__ */ React.createElement("div", { className: "text-sm font-semibold", style: { color: COLORS.text } }, "PERSONNELLES"))), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1.5 overflow-x-auto" }, years.map((y) => /* @__PURE__ */ React.createElement("button", { key: y, onClick: () => selectYear(y), className: "px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap", style: { background: y === selectedYear ? COLORS.blueLight : "rgba(255,255,255,0.05)", color: y === selectedYear ? "#0a0c28" : COLORS.sub } }, y)), /* @__PURE__ */ React.createElement("button", { onClick: addYear, className: "flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs", style: { background: "rgba(255,255,255,0.05)", color: COLORS.sub } }, /* @__PURE__ */ React.createElement(Plus, { size: 13 }), " Ann\xE9e")), /* @__PURE__ */ React.createElement("div", { className: "md:ml-auto shrink-0" }, /* @__PURE__ */ React.createElement(DataBackupControls, null))), /* @__PURE__ */ React.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ React.createElement("div", { className: "flex gap-1.5 min-w-max pb-1" }, MONTHS_FR.map((m, i) => /* @__PURE__ */ React.createElement("button", { key: m, onClick: () => setSelectedMonthIdx(i), className: "px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap", style: { background: i === selectedMonthIdx ? `linear-gradient(135deg, ${COLORS.violet}, ${COLORS.pink})` : "rgba(255,255,255,0.04)", color: i === selectedMonthIdx ? "#fff" : COLORS.sub } }, m))))), /* @__PURE__ */ React.createElement("div", { className: "flex flex-col lg:flex-row gap-5" }, /* @__PURE__ */ React.createElement("div", { className: "flex lg:flex-col gap-2 lg:w-40 overflow-x-auto" }, NAV.map((n) => /* @__PURE__ */ React.createElement("button", { key: n.key, onClick: () => setNav(n.key), className: "flex lg:flex-col items-center gap-2 lg:gap-1.5 px-4 py-3 rounded-2xl shrink-0", style: { background: nav === n.key ? "rgba(139,92,246,0.15)" : "transparent", color: nav === n.key ? COLORS.text : COLORS.sub } }, /* @__PURE__ */ React.createElement(n.icon, { size: 20, color: nav === n.key ? COLORS.blueLight : COLORS.sub }), /* @__PURE__ */ React.createElement("span", { className: "text-[11px] whitespace-nowrap" }, n.label)))), /* @__PURE__ */ React.createElement("div", { className: "flex-1 min-w-0" }, nav === "dashboard" && /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4" }, /* @__PURE__ */ React.createElement(IncomeExpenseChart, { yearData: yearFinance, selectedIdx: selectedMonthIdx, onSelect: setSelectedMonthIdx }), /* @__PURE__ */ React.createElement(RatioDonut, { income: monthTotals(currentMonth).income, expenses: monthTotals(currentMonth).expenses }), /* @__PURE__ */ React.createElement(BalanceCard, { soldeCompteCourant: soldeCompteCourantNow }), /* @__PURE__ */ React.createElement(BudgetCard, { totalBudget, totalSpent }), /* @__PURE__ */ React.createElement(InvestCard, { peaTotal: peaTotalNow, avTotal: avTotalNow, lddsTotal: lddsTotalNow, livretATotal: livretATotalNow }), /* @__PURE__ */ React.createElement(CroissanceBadge, { label: "Patrimoine \u2014 \xE9volution du mois", deltaEuro: patrimoineGrowth.euro, deltaPct: patrimoineGrowthPct }), /* @__PURE__ */ React.createElement(FinGoalsCard, { objectifs, onUpdate: updateObjectif, onAdd: addObjectif, onDelete: deleteObjectif, compact: true }), /* @__PURE__ */ React.createElement(PatrimoineListWidget, { compteCourant: soldeCompteCourantNow, ldds: lddsTotalNow, livretA: livretATotalNow, pea: peaTotalNow, av: avTotalNow }), /* @__PURE__ */ React.createElement(SummaryList, { month: currentMonth, investTotal: investTotalNow, objSaved, soldeCompteCourant: soldeCompteCourantNow, surplus: surplusNow }), /* @__PURE__ */ React.createElement(SurplusHistoryWidget, { compteCourantSchedule, years, selectedYear })), nav === "revenus" && /* @__PURE__ */ React.createElement(
+      TransactionTable,
+      {
+        kind: "income",
+        year: selectedYear,
+        monthIdx: selectedMonthIdx,
+        monthKey,
+        month: currentMonth,
+        categories: INCOME_CATEGORIES,
+        onAdd: (tx) => addTransaction("income", tx),
+        onRemove: (id) => removeTransaction("income", id),
+        gauge: null
+      }
+    ), nav === "depenses" && /* @__PURE__ */ React.createElement(
+      TransactionTable,
+      {
+        kind: "expense",
+        year: selectedYear,
+        monthIdx: selectedMonthIdx,
+        monthKey,
+        month: currentMonth,
+        categories: budgetCategoryNames,
+        onAdd: (tx) => addTransaction("expense", tx),
+        onRemove: (id) => removeTransaction("expense", id),
+        gauge: gaugeEl
+      }
+    ), nav === "budget" && /* @__PURE__ */ React.createElement(BudgetTab, { categories: budgetCategories, currentMonth, onAddCategory: addCategory, onRenameCategory: renameCategory, onSetBudget: setCategoryBudget, onDeleteCategory: deleteCategory }), nav === "objectifs" && /* @__PURE__ */ React.createElement(FinGoalsCard, { objectifs, onUpdate: updateObjectif, onAdd: addObjectif, onDelete: deleteObjectif }), nav === "pea" && /* @__PURE__ */ React.createElement(
+      SecuritiesAccountPage,
+      {
+        title: "PEA",
+        holdingsLabel: "Portefeuille titres",
+        color: COLORS.violet,
+        year: selectedYear,
+        monthIdx: selectedMonthIdx,
+        today,
+        settings: peaSettings,
+        onSettingsField: updatePeaSettingsField,
+        onVersementAdd: addPeaVersement,
+        holdings: peaHoldings,
+        onEditHolding: updatePeaHolding,
+        onDeleteHolding: deletePeaHolding,
+        onAddHolding: addPeaHolding,
+        fondsEuro: null,
+        onFondsEuroField: () => {
+        },
+        onFondsEuroRendementAdd: () => {
+        },
+        cashLabel: "Solde compte esp\xE8ces",
+        cashValue: Number(peaCashYear[monthKey]) || 0,
+        onCashChange: (v) => updatePeaCash(monthKey, v),
+        mouvementsFonction: /* @__PURE__ */ React.createElement(PeaOperationsTable, { cashByMonth: peaCashYear, versementHistory: peaSettings.versementHistory, jourVersement: peaSettings.jourVersement, year: selectedYear, today, onUpdate: updatePeaCash })
+      }
+    ), nav === "av" && /* @__PURE__ */ React.createElement(
+      SecuritiesAccountPage,
+      {
+        title: "Assurance Vie",
+        holdingsLabel: "Supports d'investissement (unit\xE9s de compte)",
+        color: COLORS.cyan,
+        year: selectedYear,
+        monthIdx: selectedMonthIdx,
+        today,
+        settings: avSettings,
+        onSettingsField: updateAvSettingsField,
+        onVersementAdd: addAvVersement,
+        holdings: avHoldings,
+        onEditHolding: updateAvHolding,
+        onDeleteHolding: deleteAvHolding,
+        onAddHolding: addAvHolding,
+        fondsEuro: avFondsEuro,
+        onFondsEuroField: updateFondsEuroField,
+        onFondsEuroRendementAdd: addFondsEuroRendement,
+        cashLabel: null,
+        cashValue: 0,
+        onCashChange: null,
+        mouvementsFonction: /* @__PURE__ */ React.createElement(AvMouvementsTable, { versementSupportsHistory: avSettings.versementSupportsHistory, versementFondsEuroHistory: avSettings.versementFondsEuroHistory, jourVersement: avSettings.jourVersement, year: selectedYear, today })
+      }
+    ), nav === "ldds" && /* @__PURE__ */ React.createElement(LivretPage, { title: "LDDS", color: COLORS.gold, dataByYear: lddsData, years, settings: lddsSettings, selectedYear, onUpdateVersement: updateLddsVersement, onSettings: updateLddsSettings, plafond: 12e3 }), nav === "livreta" && /* @__PURE__ */ React.createElement(LivretPage, { title: "Livret A", color: COLORS.cyan, dataByYear: livretAData, years, settings: livretASettings, selectedYear, onUpdateVersement: updateLivretAVersement, onSettings: updateLivretASettings }), nav === "bilan" && /* @__PURE__ */ React.createElement(
+      BilanTab,
+      {
+        bilanYear,
+        setBilanYear,
+        bilanMonthIdx,
+        setBilanMonthIdx,
+        bilanViewMode,
+        setBilanViewMode,
+        years,
+        financeData,
+        compteCourantSchedule,
+        lddsSchedule,
+        livretASchedule,
+        peaHoldings,
+        peaSettings,
+        peaCashByYear,
+        avHoldings,
+        avSettings,
+        avFondsEuro,
+        today,
+        hasLivretAData
+      }
+    ), nav === "previsions" && /* @__PURE__ */ React.createElement(PrevisionsTab, { peaHoldings, peaSettings, avHoldings, avSettings, avFondsEuro, lddsData, lddsSettings, livretAData, livretASettings, years, today })))), /* @__PURE__ */ React.createElement("div", { className: "text-center text-[11px] mt-4", style: { color: COLORS.sub } }, "Vos donn\xE9es sont saisies par vous et sauvegard\xE9es automatiquement. Rien n'est \xE9ditable directement sur les graphiques : tout se met \xE0 jour \xE0 partir des tableaux et r\xE9glages.")));
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(App, null));
+})();
+
+}
+
+</script>
+</body>
+</html>
